@@ -1,0 +1,10 @@
+express
+bcrypt
+cookie-parser
+cors
+dotenv
+jsonwebtoken
+mongodb
+mongoose
+nodemailer
+uuild
