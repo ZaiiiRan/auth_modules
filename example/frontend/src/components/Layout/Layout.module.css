@@ -1,0 +1,42 @@
+.leftHeader {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 30px;
+}
+
+.title {
+    height: 100%;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--title-color);
+}
+
+.navigation {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+}
+
+.navLink {
+    font-size: 18px;
+    text-decoration: none;
+    user-select: none;
+    cursor: pointer;
+    color: var(--color);
+    transition: color .2s ease;
+}
+.navLink:hover {
+    color: var(--hover-color);
+}
+.navLink:active {
+    color: var(--active-color);
+}
+
+.userBlock {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
