@@ -73,6 +73,57 @@ class UserController {
             next(e)
         }
     }
+
+    async changeUsername(req, res, next) {
+        try {
+            const { id, username } = req.body
+            const userData = await userService.changeUsername(id, username)
+
+            res.cookie('refreshToken', userData.refreshToken, 
+                {
+                    maxAge: 60 * 24 * 60 * 60 * 1000,
+                    httpOnly: true
+                }
+            )
+            return res.json(userData)
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    async changeEmail(req, res, next) {
+        try {
+            const { id, email } = req.body
+            const userData = await userService.changeEmail(id, email)
+
+            res.cookie('refreshToken', userData.refreshToken, 
+                {
+                    maxAge: 60 * 24 * 60 * 60 * 1000,
+                    httpOnly: true
+                }
+            )
+            return res.json(userData)
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    async changePassword(req, res, next) {
+        try {
+            const { id, password } = req.body
+            const userData = await userService.changePassword(id, password)
+
+            res.cookie('refreshToken', userData.refreshToken, 
+                {
+                    maxAge: 60 * 24 * 60 * 60 * 1000,
+                    httpOnly: true
+                }
+            )
+            return res.json(userData)
+        } catch (e) {
+            next(e)
+        }
+    }
 }
 
 module.exports = new UserController()

@@ -14,16 +14,19 @@ function Login() {
 
     const submitForm = (e) => {
         e.preventDefault()
-        return store.login(data.username, data.password)
+        if (data.username !== '' && data.password !== '') {
+            return store.login(data.username, data.password)
+        }
+        return
     }
 
     return (
         <div className={styles.LoginBlock}>
             <form className={styles.form} onSubmit={submitForm}>
-                <input className={styles.input} type="text" placeholder='Имя пользователя' 
+                <input className={styles.input} type="text" name='username' placeholder='Имя пользователя' 
                     value={data.username} onChange={e => setData({...data, username: e.target.value})}/>
 
-                <input className={styles.input} type="password" placeholder='Пароль' 
+                <input className={styles.input} type="password" name='password' placeholder='Пароль' 
                     value={data.password} onChange={e => setData({...data, password: e.target.value})}/>
 
                 <input className={styles.button} type="submit" value='Войти' />
