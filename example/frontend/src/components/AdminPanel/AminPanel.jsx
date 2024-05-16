@@ -6,6 +6,7 @@ import AdminUserCard from '../AdminUserCard/AdminUserCard'
 export default function AdminPanel() {
     const [users, setUsers] = useState([])
     const [isChanged, setIsChanged] = useState(false) 
+    const [searchUsername, setSearchUsername] = useState('')
 
     useEffect(() => {
         const getUsers = async () => {
@@ -22,8 +23,14 @@ export default function AdminPanel() {
         <>
             <div className={styles.AdminPanel}>
                 <h1>Панель администратора</h1>
+
+                <input placeholder='Поиск по имени пользователя' className={styles.usernameInput} 
+                    value={searchUsername} onChange={(e) => setSearchUsername(e.target.value)} />
+
                 {
-                    users.map(user => 
+                    users.filter(user => user.username.toLowerCase().startsWith(searchUsername.trim().toLowerCase())
+                        || user.email.toLowerCase().startsWith(searchUsername.trim().toLowerCase()))
+                    .map(user => 
                         <AdminUserCard key={user.username}
                             user={user} setIsChanged={setIsChanged}/>
                     )
