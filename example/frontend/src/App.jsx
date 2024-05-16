@@ -47,6 +47,9 @@ function App() {
   useEffect(() => {
     if (localStorage.getItem('token')) {
       store.checkAuth()
+      setInterval(() => {
+        store.checkAuth()
+      }, 30 * 60 * 1000)
     }
 
   }, [store])

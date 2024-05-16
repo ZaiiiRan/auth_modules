@@ -1,5 +1,6 @@
 const ApiError = require('../AuthAPIError')
 
+//обработчик ошибок
 module.exports = function (err, req, res, next) {
     console.log(err)
 

@@ -101,6 +101,81 @@ class UserService {
             await user.save()
         }
     }
+
+    async getAllUsers() {
+        const users = await UserModel.find()
+        return users
+    }
+
+    async changeUsername(id, username) {
+        let candidate = await userModel.findOne({ username: username })
+        if (candidate) {
+            throw ApiError.BadRequest('Пользователь с таким логином уже существует')
+        }
+        const user = await userModel.findOne({_id: id})
+        if (!user) {
+            throw new ApiError.BadRequest('Пользователь не найден')
+        } else {
+            user.username = username
+            await user.save()
+            
+            const dto = new UserDTO(user)
+            const tokens = tokenService.generateTokens({ ...dto })
+            await tokenService.saveToken(dto.id, tokens.refreshToken)
+
+            return {
+                ...tokens,
+                user: dto
+            }
+        }
+    }
+
+    async changeEmail(id, email) {
+        let candidate = await userModel.findOne({ email: email })
+        if (candidate) {
+            throw ApiError.BadRequest('Пользователь с таким email уже существует')
+        }
+        const user = await userModel.findOne({_id: id})
+        if (!user) {
+            throw new ApiError.BadRequest('Пользователь не найден')
+        } else {
+            user.email = email
+            const activationLink = uuid.v4()
+            user.activationLink = activationLink
+            user.isActivated = false
+            await user.save()
+            mailService.sendMail(email, `${process.env.HOST}/auth/activate/${activationLink}`)
+
+            const dto = new UserDTO(user)
+            const tokens = tokenService.generateTokens({ ...dto })
+            await tokenService.saveToken(dto.id, tokens.refreshToken)
+
+            return {
+                ...tokens,
+                user: dto
+            }
+        }
+    }
+
+    async changePassword(id, password) {
+        const user = await userModel.findOne({_id: id})
+        if (!user) {
+            throw new ApiError.BadRequest('Пользователь не найден')
+        } else {
+            const hashPassword = bcrypt.hashSync(password, 6)
+            user.password = hashPassword
+            await user.save()
+
+            const dto = new UserDTO(user)
+            const tokens = tokenService.generateTokens({ ...dto })
+            await tokenService.saveToken(dto.id, tokens.refreshToken)
+
+            return {
+                ...tokens,
+                user: dto
+            }
+        }
+    }
 }
 
 module.exports = new UserService()

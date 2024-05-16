@@ -1,12 +1,19 @@
-import { useEffect, useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useContext, useEffect, useState } from 'react'
 import AdminService from '../../services/AdminService'
 import styles from './AdminPanel.module.css'
 import AdminUserCard from '../AdminUserCard/AdminUserCard'
+import { AuthContext } from '../../hoc/AuthProvider'
 
 export default function AdminPanel() {
     const [users, setUsers] = useState([])
     const [isChanged, setIsChanged] = useState(false) 
     const [searchUsername, setSearchUsername] = useState('')
+    const { store } = useContext(AuthContext)
+
+    useEffect(() => {
+        store.checkAuth()
+    }, [store])
 
     useEffect(() => {
         const getUsers = async () => {

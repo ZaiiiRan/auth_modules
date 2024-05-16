@@ -1,7 +1,8 @@
 const ApiError = require('../AuthAPIError')
 const tokenService = require('../services/TokenService')
 
-//проверка авторизации
+//проверка авторизации и конкретного пользователя (реально ли он посылает запрос)
+//используется для изменения данных в учетной записи
 module.exports = function (req, res, next) {
     try {
         const authorizationHeader = req.headers.authorization
@@ -15,6 +16,12 @@ module.exports = function (req, res, next) {
         const userData = tokenService.validateAccessToken(accessToken)
 
         if (!userData) {
+            return next(ApiError.UnauthorizedError())
+        }
+
+        const { id } = req.body
+
+        if (userData.id !== id) {
             return next(ApiError.UnauthorizedError())
         }
 
