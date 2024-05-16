@@ -1,0 +1,38 @@
+.UserCard {
+    width: 50vw;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    gap: 10px;
+    background-color: #f6f6f6;
+    border-radius: 10px;
+}
+
+.username {
+    font-size: 22px;
+}
+
+.roles {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.changeRoleBtn {
+    width: 25%;
+    padding: 10px 10px;
+    font-size: 14px;
+    color: var(--color);
+    background-color: #ff7920;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color .2s ease;
+}
+.changeRoleBtn:hover {
+    background-color: #ff8636;
+}
+.changeRoleBtn:active {
+    background-color: #ff9751;
+}

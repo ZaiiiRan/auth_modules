@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react'
 import AdminService from '../../services/AdminService'
+import styles from './AdminPanel.module.css'
+import AdminUserCard from '../AdminUserCard/AdminUserCard'
 
 export default function AdminPanel() {
     const [users, setUsers] = useState([])
+    const [isChanged, setIsChanged] = useState(false) 
+
     useEffect(() => {
         const getUsers = async () => {
             const response = await AdminService.fetchUsers()
@@ -10,13 +14,22 @@ export default function AdminPanel() {
             setUsers(response.data)
         }
         getUsers()
-    }, [])
+        setIsChanged(false)
+    }, [isChanged])
+
+
     return (
         <>
-            <h1>ADMIN</h1>
-            {
-                users.map(user => <div key={user.username}>{user.username}</div>)
-            }
+            <div className={styles.AdminPanel}>
+                <h1>Панель администратора</h1>
+                {
+                    users.map(user => 
+                        <AdminUserCard key={user.username}
+                            user={user} setIsChanged={setIsChanged}/>
+                    )
+                }
+            </div>
+            
         </>
     )
 }

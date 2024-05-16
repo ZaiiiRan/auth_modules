@@ -8,7 +8,7 @@ import { useContext } from 'react'
 function AdminAuth({children}) {
     const {store} = useContext(AuthContext)
     console.log(store)
-    if (store.isAuth && !store.user.roles.includes('ADMIN')) {
+    if (store.isAuth && !store.user.roles.includes('ADMIN') || !store.isAuth) {
         return <Navigate to='/' />
     }
 
