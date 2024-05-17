@@ -1,6 +1,8 @@
 const userModel = require('../authAPI/mongoDB_models/UserModel')
+const tokenModel = require('../authAPI/mongoDB_models/TokenModel')
 const ApiError = require('../authAPI/AuthAPIError')
 const UserDTO = require('../authAPI/data_transfer_objects/UserDTO')
+const tokenService = require('../authAPI/services/TokenService')
 
 class Controller {
     async getUsers(req, res, next) {
@@ -29,6 +31,11 @@ class Controller {
             await user.save()
 
             const dto = new UserDTO(user)
+            const tokenData = await tokenModel.findOne({ user: id })
+            if (tokenData.refreshToken) {
+                const newTokens = tokenService.generateTokens({...dto})
+                tokenService.saveToken(user.id, newTokens.refreshToken)
+            }
 
             return res.json(dto)
         } catch (e) {

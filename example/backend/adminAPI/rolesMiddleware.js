@@ -1,7 +1,8 @@
 const ApiError = require('../authAPI/AuthAPIError')
 const tokenService = require('../authAPI/services/TokenService')
+const userModel = require('../authAPI/mongoDB_models/UserModel')
 
-module.exports = function (req, res, next) {
+module.exports = async function (req, res, next) {
     try {
         const authorizationHeader = req.headers.authorization
 
@@ -17,9 +18,11 @@ module.exports = function (req, res, next) {
             return next(ApiError.UnauthorizedError())
         }
 
-        if(!userData.roles.includes('ADMIN')) {
-            return next(ApiError.UnauthorizedError())
-        }
+        //просмотрим роль в БД, потому что пользователь мог воспользоваться
+        //старым токеном со старой ролью
+        const user = await userModel.findById(userData.id)
+        if (!user) return next(ApiError.UnauthorizedError())
+        else if (!user.roles.includes('ADMIN')) return next(ApiError.UnauthorizedError())
 
         req.user = userData
         next()
