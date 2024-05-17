@@ -2,12 +2,12 @@
 /* eslint-disable react/prop-types */
 import { NavLink, Outlet } from 'react-router-dom'
 import styles from './Layout.module.css'
-import { AuthContext } from '../../hoc/AuthProvider'
-import { useContext, useState, useEffect } from 'react'
+import useAuth from '../../hooks/useAuth'
+import { useState, useEffect } from 'react'
 import { observer } from 'mobx-react-lite'
 
 function Layout() {
-    const { store } = useContext(AuthContext)
+    const store = useAuth()
     const [isAuthenticated, setIsAuthenticated] = useState(store.isAuth)
 
     useEffect(() => {

@@ -32,20 +32,3 @@ header {
 .active {
     color: var(--active-color)
 }
-
-.page404 {
-    width: 100vw;
-    height: 80vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.user-settings {
-    margin: 20px 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-}

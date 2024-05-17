@@ -1,11 +1,10 @@
 /* eslint-disable react/prop-types */
 import styles from './AdminUserCard.module.css'
 import AdminService from '../../services/AdminService'
-import { useContext } from 'react'
-import { AuthContext } from '../../hoc/AuthProvider'
+import useAuth from '../../hooks/useAuth'
 
 function AdminUserCard({user, setIsChanged}) {
-    const { store } = useContext(AuthContext)
+    const store = useAuth()
 
     const changeToUser = () => {
         if (store.user.id === user.id) {

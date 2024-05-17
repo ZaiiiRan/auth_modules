@@ -4,8 +4,9 @@ import Layout from './components/Layout/Layout'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
-import { AuthProvider, AuthContext } from './hoc/AuthProvider'
-import { useContext, useEffect } from 'react'
+import { AuthProvider } from './hoc/AuthProvider'
+import useAuth from './hooks/useAuth'
+import { useEffect } from 'react'
 import AdminAuth from './hoc/AdminAuth'
 import AdminPanel from './components/AdminPanel/AminPanel'
 import LoginRegisterRedirect from './hoc/LoginRegisterRedirect'
@@ -43,7 +44,7 @@ const router = createBrowserRouter(createRoutesFromElements(
 ))
 
 function App() {
-  const { store } = useContext(AuthContext)
+  const store = useAuth()
   useEffect(() => {
     if (localStorage.getItem('token')) {
       store.checkAuth()
