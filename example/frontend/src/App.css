@@ -17,6 +17,8 @@
 
 .MainBlock {
     width: 100vw;
+    padding: 40px 80px;
+    box-sizing: border-box;
 }
 
 .FormBlock {

@@ -7,7 +7,20 @@ const tokenService = require('../authAPI/services/TokenService')
 class Controller {
     async getUsers(req, res, next) {
         try {
-            const users = await userModel.find()
+            const {isBlocked, isAdmin, username} = req.body
+            let users = await userModel.find()
+
+            if (isBlocked === true) {
+                users = users.filter(user => user.isBlocked === true)
+            }
+            if (isAdmin === true) {
+                users = users.filter(user => user.roles.includes('ADMIN'))
+            }
+            if (username !== '' && username !== null && username !== undefined) {
+                users = users.filter(user => user.username.toLowerCase().startsWith(username.trim().toLowerCase())
+                || user.email.toLowerCase().startsWith(username.trim().toLowerCase()))
+            }
+
             const usersDTO = []
             for (let i = 0; i < users.length; i++) {
                 usersDTO.push(new UserDTO(users[i]))
@@ -32,7 +45,49 @@ class Controller {
 
             const dto = new UserDTO(user)
             const tokenData = await tokenModel.findOne({ user: id })
-            if (tokenData.refreshToken) {
+            if (tokenData?.refreshToken !== null && tokenData?.refreshToken !== undefined) {
+                const newTokens = tokenService.generateTokens({...dto})
+                tokenService.saveToken(user.id, newTokens.refreshToken)
+            }
+
+            return res.json(dto)
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    async blockUser(req, res, next) {
+        try {
+            const { id } = req.body
+            const user = await userModel.findById(id)
+            if (!user) throw ApiError.BadRequest('Пользователь не найден')
+            user.isBlocked = true
+            await user.save()
+
+            const dto = new UserDTO(user)
+            const tokenData = await tokenModel.findOne({ user: id })
+            if (tokenData?.refreshToken !== null && tokenData?.refreshToken !== undefined) {
+                const newTokens = tokenService.generateTokens({...dto})
+                tokenService.saveToken(user.id, newTokens.refreshToken)
+            }
+
+            return res.json(dto)
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    async unblockUser(req, res, next) {
+        try {
+            const { id } = req.body
+            const user = await userModel.findById(id)
+            if (!user) throw ApiError.BadRequest('Пользователь не найден')
+            user.isBlocked = false
+            await user.save()
+
+            const dto = new UserDTO(user)
+            const tokenData = await tokenModel.findOne({ user: id })
+            if (tokenData?.refreshToken !== null && tokenData?.refreshToken !== undefined) {
                 const newTokens = tokenService.generateTokens({...dto})
                 tokenService.saveToken(user.id, newTokens.refreshToken)
             }

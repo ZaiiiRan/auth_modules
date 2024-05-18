@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import styles from './RegisterForm.module.css'
 
 export default function RegisterForm() {
-    const store = useAuth
+    const store = useAuth()
     const [data, setData] = useState({
         username: '',
         email: '',
@@ -125,8 +125,8 @@ export default function RegisterForm() {
             </div>
             <div className={styles.flexRow}>
                 <div>
-                    <input type="checkbox" className={styles.uiCheckbox}/>
-                    <label> Я согласен с условиями использования </label>
+                    <input type="checkbox"id="conditions" className={styles.uiCheckbox}/>
+                    <label htmlFor='conditions'> Я согласен с условиями использования </label>
                 </div>
             </div>
             <button className={styles.buttonSubmit}>Зарегистрироваться</button>

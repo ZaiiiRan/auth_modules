@@ -23,6 +23,7 @@ module.exports = async function (req, res, next) {
         const user = await userModel.findById(userData.id)
         if (!user) return next(ApiError.UnauthorizedError())
         else if (!user.roles.includes('ADMIN')) return next(ApiError.UnauthorizedError())
+        else if (user.isBlocked) return next(ApiError.UnauthorizedError())
 
         req.user = userData
         next()

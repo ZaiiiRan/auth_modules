@@ -4,7 +4,9 @@ const controller = require('./controller')
 
 const adminRouter = new Router()
 
-adminRouter.get('/users', rolesMiddleware, controller.getUsers)
+adminRouter.post('/users', rolesMiddleware, controller.getUsers)
 adminRouter.post('/update-role', rolesMiddleware, controller.updateRole)
+adminRouter.post('/block', rolesMiddleware, controller.blockUser)
+adminRouter.post('/unblock', rolesMiddleware, controller.unblockUser)
 
 module.exports = adminRouter

@@ -8,7 +8,7 @@ import { AuthProvider } from './hoc/AuthProvider'
 import useAuth from './hooks/useAuth'
 import { useEffect } from 'react'
 import AdminAuth from './hoc/AdminAuth'
-import AdminPanel from './components/AdminPanel/AminPanel'
+import AdminPage from './pages/AdminPage'
 import LoginRegisterRedirect from './hoc/LoginRegisterRedirect'
 import Page404 from './pages/Page404'
 import RequireAuth from './hoc/RequireAuth'
@@ -29,7 +29,7 @@ const router = createBrowserRouter(createRoutesFromElements(
     } />
     <Route path='/admin' element={
       <AdminAuth>
-        <AdminPanel />
+        <AdminPage />
       </AdminAuth>
     } />
     <Route path='user-settings' element={

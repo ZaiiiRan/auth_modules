@@ -1,55 +1,82 @@
-.navLink {
-    font-size: 16px;
-    text-decoration: none;
-    color: var(--color);
-    transition: color .2s ease;
-}
-.navLink:hover {
-    color: var(--hover-color);
-}
-.navLink:active {
-    color: var(--active-color);
+.flexTitle {
+    align-self: center;
 }
 
 .form {
-    background-color: #fafafa;
-    padding: 25px;
-    border: 1px var(--color) solid;
-    border-radius: 10px;
-    width: 20%;
     margin: 20px auto;
     display: flex;
     flex-direction: column;
+    gap: 10px;
+    background-color: #ffffff;
+    padding: 30px;
+    width: 450px;
+    border-radius: 20px;
+}
+
+.inputForm {
+    border: 1.5px solid #ecedec;
+    border-radius: 10px;
+    height: 50px;
+    display: flex;
     align-items: center;
-    gap: 25px;
+    padding-left: 10px;
+    transition: 0.2s ease-in-out;
 }
 
 .input {
-    width: 80%;
-    padding: 10px 10px;
-    font-size: 14px;
-    color: var(--color);
-    background-color: #f5f5f5;
-    border: 1px solid var(--color);
-    outline: none;
+    margin-left: 10px;
     border-radius: 10px;
+    border: none;
+    width: 70%;
+    height: 100%;
 }
 
-.button {
-    width: 85%;
-    padding: 10px 10px;
-    font-size: 14px;
-    color: var(--color);
-    background-color: #ff7417;
-    border: none;
+.input:focus {
     outline: none;
+}
+
+.inputForm:focus-within {
+    border: 1.5px solid var(--accent-color);
+}
+
+.flexRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.flexRow > div > label {
+    font-size: 14px;
+    color: black;
+    font-weight: 400;
+}
+
+.flexColumn > label {
+    color: #151717;
+    font-weight: 600;
+}
+
+.buttonSubmit {
+    background-color: #151717;
+    border: none;
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
     border-radius: 10px;
+    height: 50px;
+    width: 40%;
     cursor: pointer;
-    transition: background-color .2s ease;
+    transition: background-color 0.3s ease;
 }
-.button:hover {
-    background-color: #ff8636;
+
+.buttonSubmit:hover {
+    background-color: #252727;
 }
-.button:active {
-    background-color: #ff9751;
+
+.passwords {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }

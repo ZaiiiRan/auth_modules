@@ -28,7 +28,8 @@ class UserService {
                 email: email,
                 password: hashPassword,
                 activationLink: activationLink,
-                roles: [userRole.value]
+                roles: [userRole.value],
+                isBlocked: false
             }
         )
 
