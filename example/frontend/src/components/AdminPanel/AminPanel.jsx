@@ -22,7 +22,6 @@ export default function AdminPanel() {
     useEffect(() => {
         const getUsers = async () => {
             const response = await AdminService.fetchUsers(searchData.username, searchData.isBlocked, searchData.isAdmin)
-            console.log(response.data)
             setUsers(response.data)
         }
         getUsers()

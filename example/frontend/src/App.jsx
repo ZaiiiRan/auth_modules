@@ -13,6 +13,7 @@ import LoginRegisterRedirect from './hoc/LoginRegisterRedirect'
 import Page404 from './pages/Page404'
 import RequireAuth from './hoc/RequireAuth'
 import UserSettings from './pages/UserSettings'
+import PostsPage from './pages/PostsPage'
 
 const router = createBrowserRouter(createRoutesFromElements(
   <Route path='/' element={<Layout />}>
@@ -35,6 +36,14 @@ const router = createBrowserRouter(createRoutesFromElements(
     <Route path='user-settings' element={
       <RequireAuth>
         <UserSettings />
+      </RequireAuth>
+    } />
+    <Route path='posts' element={
+      <PostsPage />
+    } />
+    <Route path='post/:id/edit' element={
+      <RequireAuth>
+
       </RequireAuth>
     } />
     <Route path='/*' element={
