@@ -25,6 +25,8 @@
 
 .body {
     font-size: 18px;
+    overflow: hidden;
+    width: 95%;
 }
 
 .buttons {

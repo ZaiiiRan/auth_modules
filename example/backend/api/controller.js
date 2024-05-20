@@ -1,4 +1,5 @@
 const PostModel = require('./models/postModel')
+const UserModel = require('../authAPI/mongoDB_models/UserModel')
 const ApiError = require('../authAPI/AuthAPIError')
 
 class Controller {
@@ -15,7 +16,8 @@ class Controller {
     async createPost(req, res, next) {
         try {
             const { title, body, userID } = req.body
-            const user = await PostModel.findById(userID)
+            const user = await UserModel.findById(userID)
+            if (!user) throw ApiError.BadRequest('Пользователь не найден')
             const post = await PostModel.create({ user: userID, author: user.username, title: title, body: body })
             return res.json(post)
         } catch (e) {

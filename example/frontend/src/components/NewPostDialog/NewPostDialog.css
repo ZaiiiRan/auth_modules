@@ -1,0 +1,115 @@
+.dialogWrapper {
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    position: absolute;
+    top:0;
+    left:0;
+    background-color: rgba(0, 0, 0, 0.507);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: visibility 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+.dialogWrapper.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+.flexTitle {
+    align-self: center;
+}
+
+.form {
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #ffffff;
+    padding: 30px;
+    width: 450px;
+    border-radius: 20px;
+}
+
+.inputForm {
+    border: 1.5px solid #ecedec;
+    border-radius: 10px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    transition: 0.2s ease-in-out;
+}
+
+.input {
+    margin-left: 10px;
+    border-radius: 10px;
+    border: none;
+    width: 85%;
+    height: 100%;
+}
+
+.input:focus {
+    outline: none;
+}
+
+.inputForm:focus-within {
+    border: 1.5px solid var(--accent-color);
+}
+
+.textarea {
+    border: 1.5px solid #ecedec;
+    border-radius: 10px;
+    height: 150px;
+    padding: 7px;
+    transition: 0.2s ease-in-out;
+    resize: none;
+    border-radius: 10px;
+}
+.textarea:focus {
+    outline: none;
+}
+.textarea:focus-within {
+    border: 1.5px solid var(--accent-color);
+}
+
+.flexColumn > label {
+    color: #151717;
+    font-weight: 600;
+}
+
+.buttonSubmit {
+    margin: 20px 0 10px 0;
+    background-color: #151717;
+    border: none;
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 10px;
+    height: 50px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.buttonSubmit:hover {
+    background-color: #252727;
+}
+
+.text {
+    text-align: center;
+    color: black;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.buttons {
+    display: flex;
+    gap: 20px;
+}
+
+.error {
+    border: 1.5px solid var(--error-color);
+}

@@ -18,3 +18,21 @@
     align-items: center;
     gap: 10px;
 }
+
+.button {
+    margin: 20px 0 10px 0;
+    background-color: #151717;
+    border: none;
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 10px;
+    height: 30px;
+    width: 20%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #252727;
+}
