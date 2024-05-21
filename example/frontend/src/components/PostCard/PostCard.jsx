@@ -5,38 +5,54 @@ import useAuth from '../../hooks/useAuth'
 import PostService from '../../services/PostService'
 import { useEffect, useState } from 'react'
 import { observer } from 'mobx-react-lite'
+import PostDialog from '../PostDialog/PostDialog'
 
-function PostCard({title, body, postID, authorID, author, setIsUpdated}) {
+function PostCard({postData, setIsUpdated}) {
     const store = useAuth()
-    const [isAuth, setIsAuth] = useState(store.isAuth)
-
-    useEffect(() => {
-        setIsAuth(store.isAuth)
-    }, [store.isAuth])
+    const [isEditDialogShow, setIsEditDialogShow] = useState(false)
 
     const deletePost = async () => {
-        await PostService.deletePost(postID, authorID)
+        await PostService.deletePost(postData._id, postData.user)
         setIsUpdated(true)
     }
 
+    const dateToString = (date) => {
+        const d = new Date(date)
+        return d.toLocaleString().slice(0, 17)
+    }
+
     return (
+        <>
         <div className={styles.postCard}>
             {
-                isAuth && (store.user.id === authorID || store.user.roles.includes('ADMIN'))
+                store.isAuth && (store.user.id === postData.user || store.user.roles.includes('ADMIN'))
                 ?
                 <div className={styles.buttons}>
-                    <button className={styles.button}>Редактировать</button>
+                    <button className={styles.button} onClick={() => setIsEditDialogShow(true)}>Редактировать</button>
                     <button className={styles.button} onClick={deletePost}>Удалить</button>
                 </div>
                 :
                 <></>
             }
             <div className={styles.credentials}>
-                <div className={styles.title}>{title}</div>
-                <div className={styles.author}>Автор: {author}</div>
+                <div className={styles.title}>{postData.title}</div>
+                <div className={styles.author}>Автор: {postData.author}</div>
+                <div className={styles.author}>Дата публикации: {dateToString(postData.date)}</div>
+                {
+                    postData.lastEditDate
+                    ?
+                    <div className={styles.author}>Дата последнего изменения: {dateToString(postData.lastEditDate)}</div>
+                    :
+                    <></>
+                }
+                
             </div>
-            <div className={styles.body}>{body}</div>
+            <div className={styles.body}>{postData.body}</div>
         </div>
+        <PostDialog dialogShow={isEditDialogShow} setDialogShow={setIsEditDialogShow}
+            setIsUpdated={setIsUpdated} createMode={false} postData={postData}/>
+        </>
+        
     )
 }
 

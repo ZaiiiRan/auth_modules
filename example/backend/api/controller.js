@@ -32,6 +32,7 @@ class Controller {
             if (!post) throw ApiError.BadRequest('Пост не найден')
             post.title = title
             post.body = body
+            post.lastEditDate = Date.now()
             await post.save()
             return res.json(post)
         } catch (e) {

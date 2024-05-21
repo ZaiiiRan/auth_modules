@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import PostService from '../../services/PostService'
 import styles from './Posts.module.css'
 import PostCard from '../PostCard/PostCard'
-import NewPostDialog from '../NewPostDialog/NewPostDialog'
+import PostDialog from '../PostDialog/PostDialog'
 import useAuth from '../../hooks/useAuth'
 import { observer } from 'mobx-react-lite'
 
@@ -42,13 +42,14 @@ function Posts() {
             {
                 posts.length > 0
                 ?
-                    posts.map(post => <PostCard key={post._id} postID={post._id} author={post.author} 
-                        authorID={post.user} body={post.body} title={post.title} setIsUpdated={setIsUpdated}/>)
+                    posts.map(post => <PostCard key={post._id} 
+                        postData={post} setIsUpdated={setIsUpdated}/>)
                 :
                     <div>Посты не найдены</div>
             }
             </div>
-            <NewPostDialog setCreateDialogShow={setCreateDialogShow} createDialogShow={createDialogShow} setIsUpdated={setIsUpdated}/>
+            <PostDialog setDialogShow={setCreateDialogShow} dialogShow={createDialogShow} 
+                setIsUpdated={setIsUpdated} createMode={true}/>
         </div>
     )
 }

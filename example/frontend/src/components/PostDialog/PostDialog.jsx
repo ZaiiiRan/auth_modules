@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
-import { useRef, useState } from 'react'
-import './NewPostDialog.css'
-import PostService from '../../services/PostService'
+import { useEffect, useRef, useState } from 'react'
+import './PostDialog.css'
+import { create, edit } from './PostEventHandlers'
 import useAuth from '../../hooks/useAuth'
 
-export default function NewPostDialog({setCreateDialogShow, createDialogShow, setIsUpdated}) {
+export default function PostDialog({setDialogShow, dialogShow, setIsUpdated, createMode, postData}) {
     const [data, setData] = useState({
         title: '',
         body: ''
@@ -13,8 +13,16 @@ export default function NewPostDialog({setCreateDialogShow, createDialogShow, se
     const bodyRef = useRef()
     const store = useAuth()
 
-    const create = async (e) => {
-        e.preventDefault()
+    useEffect(() => {
+        if (!createMode && dialogShow) {
+            setData({
+                title: postData.title,
+                body: postData.body
+            })
+        }
+    }, [dialogShow])
+
+    const validate = () => {
         let error = false
         if (data.title === '') {
             titleRef.current.className = "inputForm error"
@@ -28,16 +36,22 @@ export default function NewPostDialog({setCreateDialogShow, createDialogShow, se
         } else {
             bodyRef.current.className = "textarea"
         }
-        
-        if (!error) {
-            setData({
-                title: '',
-                body: ''
-            })
-            await PostService.createPost(data.title, data.body, store.user.id)
-            setCreateDialogShow(false)
-            setIsUpdated(true)
-        }
+
+        return error
+    }
+
+    const submit = (e) => {
+        e.preventDefault()
+        const err = validate()
+        if (!err) {
+            if (createMode) create(data, store, setData, setDialogShow, setIsUpdated)
+            else {
+                if (data.title === postData.title && data.body === postData.body) {
+                    setDialogShow(false)
+                    return
+                } else edit(postData._id, data, store, setData, setDialogShow, setIsUpdated)
+            } 
+        } else return
     }
 
     const cancel = (e) => {
@@ -46,14 +60,14 @@ export default function NewPostDialog({setCreateDialogShow, createDialogShow, se
             title: '',
             body: ''
         })
-        setCreateDialogShow(false)
+        setDialogShow(false)
     }
 
     return (
-        <div className={`${createDialogShow ? 'dialogWrapper show' :  'dialogWrapper'}`}>
+        <div className={`${dialogShow ? 'dialogWrapper show' :  'dialogWrapper'}`}>
             <form className="form">
             <div className="flexTitle">
-                <h1>Новый пост </h1>
+                <h1>{createMode ? 'Новый пост' : 'Редактирование'} </h1>
             </div>
             <div className="flexColumn">
                 <label>Заголовок </label>
@@ -68,7 +82,9 @@ export default function NewPostDialog({setCreateDialogShow, createDialogShow, se
             </div>
             <textarea ref={bodyRef} className="textarea" value={data.body} onChange={(e) => { setData({...data, body: e.target.value}) }}></textarea>
             <div className="buttons">
-                <button className="buttonSubmit" onClick={create}>Опубликовать</button>
+                <button className="buttonSubmit" onClick={submit}>
+                    {createMode ? 'Опубликовать' : 'Сохранить'}
+                </button>
                 <button className="buttonSubmit" onClick={cancel}>Отмена</button>
             </div>
         </form>
