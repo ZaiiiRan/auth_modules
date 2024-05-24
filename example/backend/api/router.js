@@ -5,7 +5,7 @@ const controller = require('./controller')
 
 const APIRouter = new Router()
 
-APIRouter.get('/posts', controller.getPosts)
+APIRouter.post('/posts', controller.getPosts)
 APIRouter.post('/create-post', postMiddleware, controller.createPost)
 APIRouter.post('/edit-post', postMiddleware, controller.editPost)
 APIRouter.post('/delete-post', postMiddleware, controller.deletePost)

@@ -9,6 +9,7 @@ export default function PostDialog({setDialogShow, dialogShow, setIsUpdated, cre
         title: '',
         body: ''
     })
+    const backRef = useRef() 
     const titleRef = useRef()
     const bodyRef = useRef()
     const store = useAuth()
@@ -63,8 +64,14 @@ export default function PostDialog({setDialogShow, dialogShow, setIsUpdated, cre
         setDialogShow(false)
     }
 
+    const click = (e) => {
+        if (e.target === backRef.current) {
+            setDialogShow(false)
+        }
+    }
+
     return (
-        <div className={`${dialogShow ? 'dialogWrapper show' :  'dialogWrapper'}`}>
+        <div ref={backRef} onClick={click} className={`${dialogShow ? 'dialogWrapper show' :  'dialogWrapper'}`}>
             <form className="form">
             <div className="flexTitle">
                 <h1>{createMode ? 'Новый пост' : 'Редактирование'} </h1>

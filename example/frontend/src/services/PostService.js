@@ -1,8 +1,8 @@
 import api from '../api/postAPI'
 
 export default class PostService {
-    static fetchPosts() {
-        return api.get('/posts')
+    static fetchPosts(offset, limit) {
+        return api.post('/posts', { limit: limit, offset: offset })
     }
 
     static createPost(title, body, userID ) {

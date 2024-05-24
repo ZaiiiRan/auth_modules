@@ -5,9 +5,11 @@ const ApiError = require('../authAPI/AuthAPIError')
 class Controller {
     async getPosts(req, res, next) {
         try {
-            const posts = await PostModel.find()
+            const { offset, limit } = req.body
+            const posts = await PostModel.find().sort({ date: -1 }).skip(offset).limit(limit)
+            const count = await PostModel.find().count()
 
-            return res.json(posts)
+            return res.json({ posts: posts, count: count })
         } catch (e) {
             next(e)
         }

@@ -36,3 +36,37 @@
 .button:hover {
     background-color: #252727;
 }
+
+.pages {
+    display: flex;
+    gap: 10px;
+}
+
+.pageBtn {
+    width: 30px;
+    height: 30px;
+    background-color: #fff;
+    border: 1px solid #000;
+    color: #000;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.pageBtn:hover {
+    color: #ffffff;
+    background-color: #000;
+}
+
+.activePageBtn {
+    width: 30px;
+    height: 30px;
+    background-color: #151717;
+    border: 1px solid #000;
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 10px;
+    cursor: pointer;
+}

@@ -14,18 +14,45 @@ function Posts() {
     const store = useAuth()
     const [isAuth, setIsAuth] = useState(store.isAuth)
 
+    const [currentPage, setCurrentPage] = useState(0)
+    const [countOfPages, setCountOfPages] = useState(0)
+    const [visiblePages, setVisiblePages] = useState([1])
+    const [currentLimit, setCurrentLimit] = useState(5)
+
     useEffect(() => {
         setIsAuth(store.isAuth)
     }, [store.isAuth])
 
     useEffect(() => {
         const getPosts = async () => {
-            const response = await PostService.fetchPosts()
-            setPosts(response.data)
+            let offset
+            if (currentPage === 0 || currentPage === 1) offset = 0
+            else offset = (currentPage - 1) * currentLimit
+            const response = await PostService.fetchPosts(offset, currentLimit)
+            setPosts(response.data.posts)
+            console.log(Math.ceil(response.data.count / currentLimit))
+            setCountOfPages(Math.ceil(response.data.count / currentLimit))
         }
         getPosts()
         setIsUpdated(false)
     }, [isUpdated])
+
+
+
+    const showMore = () => {
+        setCurrentLimit(currentLimit + 5)
+        setIsUpdated(true)
+    }
+
+    const goToFirstPage = () => {
+        setCurrentPage(1)
+        setIsUpdated(true)
+    }
+
+    const goToLastPage = () => {
+        setCurrentPage(countOfPages)
+        setIsUpdated(true)
+    }
 
     return (
         <div className={styles.postsBlock}>
@@ -42,12 +69,32 @@ function Posts() {
             {
                 posts.length > 0
                 ?
-                    posts.map(post => <PostCard key={post._id} 
-                        postData={post} setIsUpdated={setIsUpdated}/>)
+                    (
+                        posts.map(post => <PostCard key={post._id} 
+                            postData={post} setIsUpdated={setIsUpdated}/>)
+                    )
                 :
                     <div>Посты не найдены</div>
             }
             </div>
+            {
+                posts.length > 0
+                ?
+                <>
+                <button className={styles.button} onClick={showMore}>Показать еще</button>
+                <div className={styles.pages}>
+                    <button onClick={goToFirstPage} className={styles.pageBtn}>&lt;&lt;</button>
+                    {
+                        visiblePages.map(pageNum => 
+                            <button className={styles.activePageBtn} key={pageNum}>{pageNum}</button>)
+                    }
+                    <button onClick={goToLastPage} className={styles.pageBtn}>&gt;&gt;</button>
+                </div>
+                </>
+                
+                :
+                <></>
+            }
             <PostDialog setDialogShow={setCreateDialogShow} dialogShow={createDialogShow} 
                 setIsUpdated={setIsUpdated} createMode={true}/>
         </div>
