@@ -76,10 +76,12 @@ function Posts() {
     }
 
     const goToFirstPage = () => {
+        if (currentPage === 1) return
         setCurrentPage(1)
     }
 
     const goToLastPage = () => {
+        if (currentPage === countOfPages) return
         setCurrentPage(countOfPages)
     }
 
@@ -107,6 +109,7 @@ function Posts() {
                     <div>Посты не найдены</div>
             }
             {
+                currentPage === 1 &&
                 posts.length > 0 && 
                 (Math.ceil(countOfPosts / currentLimit) > currentPage)
                 ?
