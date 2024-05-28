@@ -16,6 +16,11 @@ function Posts() {
     const [isUpdated, setIsUpdated] = useState(false)
     const store = useAuth()
     const [isAuth, setIsAuth] = useState(store.isAuth)
+    const [searchData, setSearchData] = useState({
+        username: '',
+        isMy: false,
+        title: ''
+    })
 
     const [currentPage, setCurrentPage] = useState(1)
     const [countOfPages, setCountOfPages] = useState(0)
@@ -32,14 +37,18 @@ function Posts() {
             let offset
             if (currentPage === 0 || currentPage === 1) offset = 0
             else offset = (currentPage - 1) * currentLimit
-            const response = await PostService.fetchPosts(offset, currentLimit)
+
+            let author = searchData.username
+            if (store.isAuth && searchData.isMy) author = store.user.username
+            const response = await PostService.fetchPosts(offset, currentLimit, author, searchData.title)
             setPosts(response.data.posts)
             setCountOfPages(Math.ceil(response.data.count / currentLimit))
             setCountOfPosts(response.data.count)
         }
         getPosts()
         setIsUpdated(false)
-    }, [isUpdated, currentPage, currentLimit])
+        updateVisiblePages()
+    }, [isUpdated, currentPage])
 
 
 
@@ -87,7 +96,36 @@ function Posts() {
 
 
     return (
-        <div className={styles.postsBlock}>
+        <div className={styles.wrapper}>
+            <div className={styles.filters}>
+                <form className={styles.form} >
+                    <div className={styles.flexTitle}>
+                        <h1>Фильтры </h1>
+                    </div>  
+                    <div className={styles.inputForm}>
+                        <svg height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M14.9536 14.9458L21 21M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
+                        <input type="text" className={styles.input} placeholder="Заголовок" 
+                            onChange={(e) => { setSearchData({...searchData, title: e.target.value}); setCurrentPage(1); setIsUpdated(true); }} value={searchData.title}/>
+                    </div>
+                    <div className={styles.inputForm}>
+                        <svg height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M14.9536 14.9458L21 21M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
+                        <input type="text" className={styles.input} placeholder="Имя автора" 
+                            onChange={(e) => { setSearchData({...searchData, username: e.target.value}); setCurrentPage(1); setIsUpdated(true);}} value={searchData.username}/>
+                    </div>
+                    {
+                        store.isAuth &&
+                        <div className={styles.flexRow}>
+                        <div>
+                            <input type="checkbox" id="myPosts" className={styles.uiCheckbox} 
+                                checked={searchData.isMy} onChange={(e) => {setSearchData({...searchData, isMy: e.target.checked}); setIsUpdated(true);}}/>
+                            <label htmlFor='myPosts'> Мои посты </label>
+                        </div>
+                    </div>
+                    }
+                </form>
+            </div>
+
+            <div className={styles.postsBlock}>
             <div><h1>Посты</h1></div>
             {
                 isAuth
@@ -141,7 +179,8 @@ function Posts() {
                 :
                 <></>
             }
-            <PostDialog setDialogShow={setCreateDialogShow} dialogShow={createDialogShow} 
+        </div>
+        <PostDialog setDialogShow={setCreateDialogShow} dialogShow={createDialogShow} 
                 setIsUpdated={setIsUpdated} createMode={true}/>
         </div>
     )

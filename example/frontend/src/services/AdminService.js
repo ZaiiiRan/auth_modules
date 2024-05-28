@@ -1,8 +1,8 @@
 import api from '../api/adminAPI'
 
 export default class AdminService {
-    static fetchUsers(username, isBlocked, isAdmin) {
-        return api.post('/users', { isBlocked, isAdmin, username })
+    static fetchUsers(username, isBlocked, isAdmin, limit, offset) {
+        return api.post('/users', { isBlocked, isAdmin, username, limit, offset })
     }
 
     static updateToAdmin(id) {

@@ -5,6 +5,8 @@ import styles from './AdminPanel.module.css'
 import AdminUserCard from '../AdminUserCard/AdminUserCard'
 import useAuth from '../../hooks/useAuth'
 
+const MAX_PAGES_TO_DISPLAY = 4
+
 export default function AdminPanel() {
     const [users, setUsers] = useState([])
     const [isChanged, setIsChanged] = useState(false) 
@@ -15,19 +17,72 @@ export default function AdminPanel() {
     })
     const store = useAuth()
 
+
+    const [currentPage, setCurrentPage] = useState(1)
+    const [countOfPages, setCountOfPages] = useState(0)
+    const [visiblePages, setVisiblePages] = useState([1])
+    const [currentLimit, setCurrentLimit] = useState(5)
+    const [countOfUsers, setCountOfUsers] = useState(0)
+
+
+
     useEffect(() => {
         store.checkAuth()
     }, [store])
 
+    const updateVisiblePages = () => {
+        const startPage = Math.max(1, currentPage - 1)
+        const endPage = Math.min(startPage + 3, countOfPages)
+        const pagesToShow = Array.from({ length: 4 }, (_, i) => startPage + i)
+
+        if (countOfPages <= MAX_PAGES_TO_DISPLAY) {
+            setVisiblePages(Array.from({ length: countOfPages }, (_, i) => i + 1))
+        } else if (startPage < 2) {
+            setVisiblePages(Array.from({ length: 4 }, (_, i) => i + 1))
+        } else if (endPage > countOfPages - 1) {
+            setVisiblePages(Array.from({ length: 4 }, (_, i) => countOfPages - i).reverse().slice(0, 4))
+        } else {
+            setVisiblePages(pagesToShow)
+        }
+    }
+
     useEffect(() => {
         const getUsers = async () => {
-            const response = await AdminService.fetchUsers(searchData.username, searchData.isBlocked, searchData.isAdmin)
-            setUsers(response.data)
+            let offset = 0
+            if (currentPage !== 1) offset = (currentPage - 1) * currentLimit 
+
+            const response = await AdminService.fetchUsers(searchData.username, searchData.isBlocked, 
+                searchData.isAdmin, currentLimit, offset)
+            setUsers(response.data.users)
+            setCountOfPages(Math.ceil(response.data.count / currentLimit))
+            setCountOfUsers(response.data.count)
         }
         getUsers()
+        updateVisiblePages()
         setIsChanged(false)
-    }, [isChanged])
+    }, [isChanged, currentPage])
 
+    useEffect(() => {
+        if (currentPage > 1 && users.length === 0) {
+            const page = Math.ceil(countOfUsers / currentLimit)
+            setCurrentPage(page)
+        }
+        updateVisiblePages()
+    }, [currentPage, countOfPages])
+
+    const goToFirstPage = () => {
+        if (currentPage === 1) return
+        setCurrentPage(1)
+    }
+
+    const goToLastPage = () => {
+        if (currentPage === countOfPages) return
+        setCurrentPage(countOfPages)
+    }
+
+    const handlePageClick = (page) => {
+        setCurrentPage(page)
+    }
 
     return (
         <div className={styles.wrapper}>
@@ -73,6 +128,27 @@ export default function AdminPanel() {
                             <></>
                     }
                 </div>
+                {
+                    users.length > 0
+                    ?
+                    <>
+                    <div className={styles.pages}>
+                        <button onClick={goToFirstPage} className={styles.pageBtn}>&lt;&lt;</button>
+                        {
+                            visiblePages.map(pageNum => {
+                                return pageNum === currentPage 
+                                ?
+                                <button className={styles.activePageBtn} key={pageNum}>{pageNum}</button>
+                                :
+                                <button className={styles.pageBtn} onClick={() => handlePageClick(pageNum)} key={pageNum}>{pageNum}</button>
+                            })    
+                        }
+                        <button onClick={goToLastPage} className={styles.pageBtn}>&gt;&gt;</button>
+                    </div>
+                    </>
+                    :
+                    <></>
+                }
             </div>
         </div>
     )

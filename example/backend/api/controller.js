@@ -5,11 +5,25 @@ const ApiError = require('../authAPI/AuthAPIError')
 class Controller {
     async getPosts(req, res, next) {
         try {
-            const { offset, limit } = req.body
-            const posts = await PostModel.find().sort({ date: -1 }).skip(offset).limit(limit)
-            const count = await PostModel.find().count()
+            const { offset, limit, username, title } = req.body
+            let posts = await PostModel.find().sort({ date: -1 })
+            const count = posts.length
+            if (username && username.trim() !== '') {
+                posts = posts.filter(post => 
+                    post.author.toLocaleLowerCase().startsWith(username.trim().toLocaleLowerCase()))
+            }
+            if (title && title.trim() !== '') {
+                posts = posts.filter(post => 
+                    post.title.toLowerCase().startsWith(title.trim().toLocaleLowerCase()))
+            }
 
-            return res.json({ posts: posts, count: count })
+            const resp = []
+            for (let i = offset; i < offset + limit; i++) {
+                if (!posts[i]) break
+                resp.push(posts[i])
+            }
+
+            return res.json({ posts: resp, count: count })
         } catch (e) {
             next(e)
         }

@@ -7,7 +7,7 @@ const tokenService = require('../authAPI/services/TokenService')
 class Controller {
     async getUsers(req, res, next) {
         try {
-            const {isBlocked, isAdmin, username} = req.body
+            const {isBlocked, isAdmin, username, limit, offset} = req.body
             let users = await userModel.find()
 
             if (isBlocked === true) {
@@ -16,16 +16,17 @@ class Controller {
             if (isAdmin === true) {
                 users = users.filter(user => user.roles.includes('ADMIN'))
             }
-            if (username !== '' && username !== null && username !== undefined) {
+            if (username && username.trim() !== '') {
                 users = users.filter(user => user.username.toLowerCase().startsWith(username.trim().toLowerCase())
                 || user.email.toLowerCase().startsWith(username.trim().toLowerCase()))
             }
 
             const usersDTO = []
-            for (let i = 0; i < users.length; i++) {
+            for (let i = offset; i < offset + limit; i++) {
+                if (!users[i]) break
                 usersDTO.push(new UserDTO(users[i]))
             }
-            return res.json(usersDTO)
+            return res.json({ users: usersDTO, count: users.length })
         } catch (e) {
             next(e)
         }
