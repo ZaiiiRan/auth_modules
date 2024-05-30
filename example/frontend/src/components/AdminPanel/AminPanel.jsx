@@ -1,9 +1,11 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react'
 import AdminService from '../../services/AdminService'
 import styles from './AdminPanel.module.css'
 import AdminUserCard from '../AdminUserCard/AdminUserCard'
 import useAuth from '../../hooks/useAuth'
+import AdminUserCardSkeleton from '../AdminUserCardSkeleton/AdminUserCardSkeleton'
 
 const MAX_PAGES_TO_DISPLAY = 4
 
@@ -17,7 +19,7 @@ export default function AdminPanel() {
     })
     const store = useAuth()
 
-
+    const [isLoading, setIsLoading] = useState(true)
     const [currentPage, setCurrentPage] = useState(1)
     const [countOfPages, setCountOfPages] = useState(0)
     const [visiblePages, setVisiblePages] = useState([1])
@@ -48,6 +50,7 @@ export default function AdminPanel() {
 
     useEffect(() => {
         const getUsers = async () => {
+            setIsLoading(true)
             let offset = 0
             if (currentPage !== 1) offset = (currentPage - 1) * currentLimit 
 
@@ -56,6 +59,7 @@ export default function AdminPanel() {
             setUsers(response.data.users)
             setCountOfPages(Math.ceil(response.data.count / currentLimit))
             setCountOfUsers(response.data.count)
+            setTimeout(() => setIsLoading(false), 1000)
         }
         getUsers()
         updateVisiblePages()
@@ -114,18 +118,23 @@ export default function AdminPanel() {
             </div>
             <div className={styles.AdminPanel}>
                 <div className={styles.users}>
-                    {
+                    {   
+                        !isLoading &&
+                        (users.length > 0 
+                        ?
                         users.map(user => 
                             <AdminUserCard key={user.username}
                                 user={user} setIsChanged={setIsChanged}/>
                         )
+                        :
+                        <div>Пользователи не найдены</div>)
                     }
                     {
-                        users.length === 0
-                            ?
-                            <div>Пользователи не найдены</div>
-                            :
-                            <></>
+                        isLoading 
+                        ?
+                        Array.from({length: currentLimit}).map((_, index) => <AdminUserCardSkeleton key={index} />)
+                        :
+                        <></>
                     }
                 </div>
                 {

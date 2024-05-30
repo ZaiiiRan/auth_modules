@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import PostService from '../../services/PostService'
 import styles from './Posts.module.css'
 import PostCard from '../PostCard/PostCard'
+import PostCardSkeleton from '../PostCardSkeleton/PostCardSkeleton'
 import PostDialog from '../PostDialog/PostDialog'
 import useAuth from '../../hooks/useAuth'
 import { observer } from 'mobx-react-lite'
@@ -16,12 +17,14 @@ function Posts() {
     const [isUpdated, setIsUpdated] = useState(false)
     const store = useAuth()
     const [isAuth, setIsAuth] = useState(store.isAuth)
+    const [isActivated, setIsActivated] = useState(store.user.isActivated)
     const [searchData, setSearchData] = useState({
         username: '',
         isMy: false,
         title: ''
     })
 
+    const [isLoading, setIsLoading] = useState(true)
     const [currentPage, setCurrentPage] = useState(1)
     const [countOfPages, setCountOfPages] = useState(0)
     const [visiblePages, setVisiblePages] = useState([1])
@@ -33,7 +36,12 @@ function Posts() {
     }, [store.isAuth])
 
     useEffect(() => {
+        setIsActivated(store.user.isActivated)
+    }, [store.user.isActivated])
+
+    useEffect(() => {
         const getPosts = async () => {
+            setIsLoading(true)
             let offset
             if (currentPage === 0 || currentPage === 1) offset = 0
             else offset = (currentPage - 1) * currentLimit
@@ -44,15 +52,15 @@ function Posts() {
             setPosts(response.data.posts)
             setCountOfPages(Math.ceil(response.data.count / currentLimit))
             setCountOfPosts(response.data.count)
+            setTimeout(() => setIsLoading(false), 1000)
         }
         getPosts()
-        setIsUpdated(false)
-        updateVisiblePages()
-    }, [isUpdated, currentPage])
+    }, [isUpdated, currentPage, currentLimit])
 
 
 
     const handlePageClick = (page) => {
+        if (isLoading) return
         setCurrentPage(page)
     }
 
@@ -81,15 +89,18 @@ function Posts() {
     }, [currentPage, countOfPages])
 
     const showMore = () => {
+        if (isLoading) return
         setCurrentLimit(currentLimit + 5)
     }
 
     const goToFirstPage = () => {
+        if (isLoading) return
         if (currentPage === 1) return
         setCurrentPage(1)
     }
 
     const goToLastPage = () => {
+        if (isLoading) return
         if (currentPage === countOfPages) return
         setCurrentPage(countOfPages)
     }
@@ -105,19 +116,19 @@ function Posts() {
                     <div className={styles.inputForm}>
                         <svg height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M14.9536 14.9458L21 21M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
                         <input type="text" className={styles.input} placeholder="Заголовок" 
-                            onChange={(e) => { setSearchData({...searchData, title: e.target.value}); setCurrentPage(1); setIsUpdated(true); }} value={searchData.title}/>
+                            onChange={(e) => { setSearchData({...searchData, title: e.target.value}); setIsUpdated(!isUpdated); }} value={searchData.title}/>
                     </div>
                     <div className={styles.inputForm}>
                         <svg height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M14.9536 14.9458L21 21M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
                         <input type="text" className={styles.input} placeholder="Имя автора" 
-                            onChange={(e) => { setSearchData({...searchData, username: e.target.value}); setCurrentPage(1); setIsUpdated(true);}} value={searchData.username}/>
+                            onChange={(e) => { setSearchData({...searchData, username: e.target.value}); setIsUpdated(!isUpdated);}} value={searchData.username}/>
                     </div>
                     {
                         store.isAuth &&
                         <div className={styles.flexRow}>
                         <div>
                             <input type="checkbox" id="myPosts" className={styles.uiCheckbox} 
-                                checked={searchData.isMy} onChange={(e) => {setSearchData({...searchData, isMy: e.target.checked}); setIsUpdated(true);}}/>
+                                checked={searchData.isMy} onChange={(e) => {setSearchData({...searchData, isMy: e.target.checked}); setIsUpdated(!isUpdated);}}/>
                             <label htmlFor='myPosts'> Мои посты </label>
                         </div>
                     </div>
@@ -128,7 +139,7 @@ function Posts() {
             <div className={styles.postsBlock}>
             <div><h1>Посты</h1></div>
             {
-                isAuth
+                isAuth && isActivated
                 ?
                 <button className={styles.button} onClick={() => setCreateDialogShow(true)}>Новый пост</button>
                 :
@@ -137,14 +148,21 @@ function Posts() {
             
             <div className={styles.posts}>
             {
-                posts.length > 0
+                isLoading 
+                ?
+                Array.from({length: currentLimit}).map((_, index) => <PostCardSkeleton key={index} />)
+                :
+                <></>
+            }
+            {
+                !isLoading && (posts.length > 0
                 ?
                     (
                         posts.map(post => <PostCard key={post._id} 
                             postData={post} setIsUpdated={setIsUpdated}/>)
                     )
                 :
-                    <div>Посты не найдены</div>
+                    <div>Посты не найдены</div>)
             }
             {
                 currentPage === 1 &&
@@ -181,7 +199,7 @@ function Posts() {
             }
         </div>
         <PostDialog setDialogShow={setCreateDialogShow} dialogShow={createDialogShow} 
-                setIsUpdated={setIsUpdated} createMode={true}/>
+                setIsUpdated={setIsUpdated} createMode={true} />
         </div>
     )
 }

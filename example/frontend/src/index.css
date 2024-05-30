@@ -28,6 +28,7 @@ header {
     justify-content: space-between;
     align-items: center;
     background-color: var(--header-bg-color);
+    height: 45px;
 }
 
 .active {

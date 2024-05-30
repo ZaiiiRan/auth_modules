@@ -7,7 +7,7 @@ class Controller {
         try {
             const { offset, limit, username, title } = req.body
             let posts = await PostModel.find().sort({ date: -1 })
-            const count = posts.length
+            
             if (username && username.trim() !== '') {
                 posts = posts.filter(post => 
                     post.author.toLocaleLowerCase().startsWith(username.trim().toLocaleLowerCase()))
@@ -16,6 +16,7 @@ class Controller {
                 posts = posts.filter(post => 
                     post.title.toLowerCase().startsWith(title.trim().toLocaleLowerCase()))
             }
+            const count = posts.length
 
             const resp = []
             for (let i = offset; i < offset + limit; i++) {

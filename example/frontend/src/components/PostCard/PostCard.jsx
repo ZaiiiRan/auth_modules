@@ -3,9 +3,10 @@
 import styles from './PostCard.module.css'
 import useAuth from '../../hooks/useAuth'
 import PostService from '../../services/PostService'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { observer } from 'mobx-react-lite'
 import PostDialog from '../PostDialog/PostDialog'
+
 
 function PostCard({postData, setIsUpdated}) {
     const store = useAuth()
@@ -25,7 +26,7 @@ function PostCard({postData, setIsUpdated}) {
         <>
         <div className={styles.postCard}>
             {
-                store.isAuth && (store.user.id === postData.user || store.user.roles.includes('ADMIN'))
+                store.isAuth && store.user.isActivated && (store.user.id === postData.user || store.user.roles.includes('ADMIN'))
                 ?
                 <div className={styles.buttons}>
                     <button className={styles.button} onClick={() => setIsEditDialogShow(true)}>Редактировать</button>

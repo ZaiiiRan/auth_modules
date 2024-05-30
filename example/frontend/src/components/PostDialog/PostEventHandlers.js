@@ -7,7 +7,7 @@ export async function create(data, store, setData, setDailogShow, setIsUpdated) 
         body: ''
     })
     setDailogShow(false)
-    setIsUpdated(true)
+    setIsUpdated(prev => !prev)
 }
 
 export async function edit(postID, data, store, setData, setDailogShow, setIsUpdated) {
@@ -17,5 +17,5 @@ export async function edit(postID, data, store, setData, setDailogShow, setIsUpd
         body: ''
     })
     setDailogShow(false)
-    setIsUpdated(true)
+    setIsUpdated(prev => !prev)
 }

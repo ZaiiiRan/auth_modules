@@ -22,6 +22,7 @@ module.exports = async function (req, res, next) {
         if (!user) return next(ApiError.UnauthorizedError())
 
         if (user.isBlocked === true) next(ApiError.UnauthorizedError())
+        if (!user.isActivated) next(ApiError.UnauthorizedError())
 
         const { userID } = req.body
         

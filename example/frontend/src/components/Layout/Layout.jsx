@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react/prop-types */
 import { NavLink, Outlet } from 'react-router-dom'
+import ContentLoader from "react-content-loader"
 import styles from './Layout.module.css'
 import useAuth from '../../hooks/useAuth'
 import { useState, useEffect } from 'react'
@@ -51,7 +52,9 @@ function Layout() {
                                         <NavLink to={'/login' } className={styles.navLink}>Войти</NavLink>
                                 )
                             :
-                                <div>Загрузка</div>
+                            <ContentLoader speed={0.7} height='100%'>
+                                    <rect x="60%" y="45%" rx="7" ry="7" width="100" height="16" /> 
+                            </ContentLoader>
                     }
                 </div>
             </header>
