@@ -113,3 +113,40 @@
 .error {
     border: 1.5px solid var(--error-color);
 }
+
+@media (max-width: 1280px) and (min-width: 960px) {
+    .flexTitle {
+        font-size: 14px;
+    }
+    
+    .form {
+        width: 400px;
+    }
+}
+@media (max-width: 960px) and (min-width: 768px) {
+    .flexTitle {
+        font-size: 14px;
+    }
+    
+    .form {
+        width: 350px;
+    }
+}
+@media (max-width: 768px) and (min-width: 460px) {
+    .flexTitle {
+        font-size: 14px;
+    }
+    
+    .form {
+        width: 300px;
+    }
+}
+@media (max-width: 460px) {
+    .flexTitle {
+        font-size: 12px;
+    }
+    
+    .form {
+        width: 250px;
+    }
+}

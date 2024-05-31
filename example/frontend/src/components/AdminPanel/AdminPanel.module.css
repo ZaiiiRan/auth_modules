@@ -6,6 +6,8 @@
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: center;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .AdminPanel {
@@ -19,6 +21,7 @@
     flex-direction: column;
     gap: 30px;
     align-items: center;
+    max-width: 100%;
 }
 
 .users {
@@ -202,4 +205,102 @@
     font-weight: 500;
     border-radius: 10px;
     cursor: pointer;
+}
+
+@media (max-width: 1600px) and (min-width: 1280px) {
+    .form {
+        width: 350px;
+    }
+    .postsBlock {
+        width: 48vw;
+    }
+}
+
+@media (max-width: 1280px) and (min-width: 960px) {
+    .flexTitle {
+        font-size: 14px;
+    }
+    .wrapper {
+        padding: 30px 80px;
+    }
+
+    .form {
+        margin: 20px auto;
+        gap: 20px;
+        padding: 30px;
+        width: 300px;
+    }
+    .AdminPanel {
+        width: 35vw;
+    }
+    .button {
+        width: 40%;
+    }
+}
+
+@media (max-width: 960px) and (min-width: 768px) {
+    .flexTitle {
+        font-size: 14px;
+    }
+    .wrapper {
+        padding: 40px 80px;
+        flex-direction: column;
+    }
+
+    .form {
+        gap: 10px;
+        width: 400px;
+    }
+    .AdminPanel {
+        width: 48vw;
+    }
+    .button {
+        width: 40%;
+    }
+}
+
+@media (max-width: 768px) and (min-width: 460px) {
+    .flexTitle {
+        font-size: 14px;
+    }
+    .wrapper {
+        padding: 30px 80px;
+        flex-direction: column;
+    }
+
+    .form {
+        gap: 10px;
+        width: 250px;
+    }
+    .AdminPanel {
+        width: 70%;
+    }
+    .button {
+        width: 70%;
+    }
+}
+
+@media (max-width: 460px) {
+    .wrapper {
+        padding: 20px 20px;
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .form {
+        width: 70%;
+        padding: 20px;
+    }
+
+    .AdminPanel {
+        width: 70%;
+        margin: 10px auto;
+    }
+
+    .button {
+        width: 80%;
+    }
+    .input {
+        font-size: 10px;
+    }
 }

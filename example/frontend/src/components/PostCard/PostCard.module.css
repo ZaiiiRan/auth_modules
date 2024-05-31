@@ -52,3 +52,49 @@
 .button:hover {
     background-color: #252727;
 }
+
+@media (max-width: 1600px) and (min-width: 1280px) {
+    .button {
+        width: 30%;
+    }
+}
+
+@media (max-width: 1280px) and (min-width: 960px) {
+    .buttons {
+        gap: 25px;
+    }
+    .button {
+        width: 80%;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 960px) and (min-width: 768px) {
+    .buttons {
+        gap: 20px;
+    }
+    .button {
+        width: 80%;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) and (min-width: 460px) {
+    .buttons {
+        gap: 15px;
+    }
+    .button {
+        width: 80%;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 460px) {
+    .buttons {
+        gap: 10px;
+    }
+    .button {
+        width: 80%;
+        font-size: 10px;
+    }
+}

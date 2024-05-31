@@ -45,3 +45,76 @@
     align-items: center;
     gap: 20px;
 }
+
+
+@media (max-width: 1280px) and (min-width: 960px) {
+    .userBlock {
+        gap: 18px;
+    }
+    .navLink {
+        font-size: 16px;
+    }
+    .navigation {
+        gap: 30px;
+    }
+    .leftHeader {
+        gap: 25px;
+    }
+    .logo {
+        width: 25px;
+    }
+}
+
+@media (max-width: 960px) and (min-width: 768px) {
+    .userBlock {
+        gap: 18px;
+    }
+    .navLink {
+        font-size: 16px;
+    }
+    .navigation {
+        gap: 25px;
+    }
+    .leftHeader {
+        gap: 20px;
+    }
+    .logo {
+        width: 25px;
+    }
+}
+
+@media (max-width: 768px) and (min-width: 480px) {
+    .logo {
+        width: 20px;
+    }
+    .userBlock {
+        gap: 10px;
+    }
+    .navLink {
+        font-size: 14px;
+    }
+    .navigation {
+        gap: 20px;
+    }
+    .leftHeader {
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        width: 15px;
+    }
+    .userBlock {
+        gap: 7px;
+    }
+    .navLink {
+        font-size: 12px;
+    }
+    .navigation {
+        gap: 15px;
+    }
+    .leftHeader {
+        gap: 10px;
+    }
+}

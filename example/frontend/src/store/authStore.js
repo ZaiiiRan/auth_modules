@@ -57,7 +57,7 @@ export default class Store {
             this.setUser({})
         } catch (e) {
             //обработка ошибок при выходе
-            alert(e.response?.data?.message)
+            alert('Ошибка связи с сервером')
         }
     }
 
@@ -84,7 +84,7 @@ export default class Store {
                 return true
             }
         } catch (e) {
-            alert(e.response?.data?.message)
+            alert('Ошибка связи с сервером')
             return false
         }
     }
@@ -98,7 +98,7 @@ export default class Store {
                 return true
             }
         } catch (e) {
-            alert(e.response?.data?.message)
+            alert('Ошибка связи с сервером')
             return false
         }
     }
@@ -112,7 +112,7 @@ export default class Store {
                 return true
             }
         } catch (e) {
-            alert(e.response?.data?.message)
+            alert('Ошибка связи с сервером')
             return false
         }
     }

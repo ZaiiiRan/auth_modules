@@ -41,18 +41,25 @@ function Posts() {
 
     useEffect(() => {
         const getPosts = async () => {
-            setIsLoading(true)
-            let offset
-            if (currentPage === 0 || currentPage === 1) offset = 0
-            else offset = (currentPage - 1) * currentLimit
-
-            let author = searchData.username
-            if (store.isAuth && searchData.isMy) author = store.user.username
-            const response = await PostService.fetchPosts(offset, currentLimit, author, searchData.title)
-            setPosts(response.data.posts)
-            setCountOfPages(Math.ceil(response.data.count / currentLimit))
-            setCountOfPosts(response.data.count)
-            setTimeout(() => setIsLoading(false), 1000)
+            try {
+                setIsLoading(true)
+                let offset
+                if (currentPage === 0 || currentPage === 1) offset = 0
+                else offset = (currentPage - 1) * currentLimit
+    
+                let author = searchData.username
+                if (store.isAuth && searchData.isMy) author = store.user.username
+                const response = await PostService.fetchPosts(offset, currentLimit, author, searchData.title)
+                setPosts(response.data.posts)
+                setCountOfPages(Math.ceil(response.data.count / currentLimit))
+                setCountOfPosts(response.data.count)
+                setTimeout(() => setIsLoading(false), 1000)
+            } catch {
+                alert('Ошибка получения данных')
+                setPosts([])
+                setIsLoading(false)
+            }
+            
         }
         getPosts()
     }, [isUpdated, currentPage, currentLimit])

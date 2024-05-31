@@ -50,16 +50,23 @@ export default function AdminPanel() {
 
     useEffect(() => {
         const getUsers = async () => {
-            setIsLoading(true)
-            let offset = 0
-            if (currentPage !== 1) offset = (currentPage - 1) * currentLimit 
-
-            const response = await AdminService.fetchUsers(searchData.username, searchData.isBlocked, 
-                searchData.isAdmin, currentLimit, offset)
-            setUsers(response.data.users)
-            setCountOfPages(Math.ceil(response.data.count / currentLimit))
-            setCountOfUsers(response.data.count)
-            setTimeout(() => setIsLoading(false), 1000)
+            try {
+                setIsLoading(true)
+                let offset = 0
+                if (currentPage !== 1) offset = (currentPage - 1) * currentLimit 
+    
+                const response = await AdminService.fetchUsers(searchData.username, searchData.isBlocked, 
+                    searchData.isAdmin, currentLimit, offset)
+                setUsers(response.data.users)
+                setCountOfPages(Math.ceil(response.data.count / currentLimit))
+                setCountOfUsers(response.data.count)
+                setTimeout(() => setIsLoading(false), 1000)
+            } catch {
+                alert('Ошибка при получении данных')
+                setUsers([])
+                setIsLoading(false)
+            }
+            
         }
         getUsers()
         updateVisiblePages()

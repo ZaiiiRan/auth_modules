@@ -43,11 +43,16 @@ export default function UserSettingsForm() {
         }
         if (data.username !== '') {
             const success = await store.changeUsername(data.username)
-            if (success) setData({...data, username: ''})
+            if (success) {
+                setData({...data, username: store.user.username})
+                alert('Имя пользователя успешно изменено')
+            }
             else return
         }
-        setData({...data, username: store.user.username})
-        alert('Имя пользователя успешно изменено')
+        if (data.username === '') {
+            alert('Имя пользователя пусто')
+        }
+        
     }
 
     const saveEmail = async (e) => {
@@ -59,11 +64,17 @@ export default function UserSettingsForm() {
             }
         if (data.email !== '') {
             const success = await store.changeEmail(data.email)
-            if (success) setData({...data, email: ''})
+            if (success) {
+                setData({...data, email: ''})
+                setData({...data, email: store.user.email})
+                alert('Email успешно изменен')
+            } 
             else return
         }
-        setData({...data, email: store.user.email})
-        alert('Email успешно изменен')
+        if (data.email === '') {
+            alert('Email пуст')
+        }
+        
     }
 
     const savePassword = async (e) => {
@@ -79,11 +90,15 @@ export default function UserSettingsForm() {
         }
         if (data.password !== '') {
             const success = await store.changePassword(data.password)
-            if (success) setData({...data, password: '', repeatPassword: ''})
+            if (success) {
+                setData({...data, password: '', repeatPassword: ''})
+                alert('Пароль успешно изменен')
+            } 
             else return
         }
-        setData({...data, password: '', repeatPassword: ''})
-        alert('Пароль успешно изменен')
+        if (data.password === '') {
+            alert('Пароль пуст')
+        } 
     }
 
     return (

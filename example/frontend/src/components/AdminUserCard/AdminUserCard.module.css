@@ -47,3 +47,32 @@
     flex-direction: row;
     gap: 20px;
 }
+
+@media (max-width: 1280px) and (min-width: 960px) {
+    .UserCard {
+        width: 30vw;
+    }
+}
+
+@media (max-width: 768px) and (min-width: 460px) {
+    .buttons {
+        gap: 10px;
+    }
+    .button {
+        width: 50%;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 460px) {
+    .UserCard {
+        width: 45vw;
+    }
+    .buttons {
+        gap: 5px;
+    }
+    .button {
+        width: 45%;
+        font-size: 8px;
+    }
+}

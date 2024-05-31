@@ -13,8 +13,13 @@ function PostCard({postData, setIsUpdated}) {
     const [isEditDialogShow, setIsEditDialogShow] = useState(false)
 
     const deletePost = async () => {
-        await PostService.deletePost(postData._id, postData.user)
-        setIsUpdated(true)
+        try {
+            await PostService.deletePost(postData._id, postData.user)
+            setIsUpdated(true)
+        } catch {
+            alert('Ошибка связи с сервером')
+        }
+        
     }
 
     const dateToString = (date) => {
