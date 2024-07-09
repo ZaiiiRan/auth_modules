@@ -1,2 +1,4 @@
-/example/backend/.env
-/example/backend/node_modules
+/example/backend (nodeJS + mongodb)/.env
+/example/backend (nodeJS + postgresql)/.env
+/example/backend (nodeJS + mongodb)/node_modules
+/example/backend (nodeJS + postgresql)/node_modules
