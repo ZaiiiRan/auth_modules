@@ -4,7 +4,7 @@ const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const authRouter = require('./authAPI/router')
 const errorMiddleware = require('./authAPI/middleware/errorMiddleware')
-//const adminRouter = require('./adminAPI/router')
+const adminRouter = require('./adminAPI/router')
 //const apiRouter = require('./api/router')
 
 const port = process.env.PORT || 5000
@@ -17,10 +17,10 @@ app.use(cors({
     origin: `${process.env.CLIENT_URL}`
 }))
 app.use('/auth', authRouter)
-//app.use('/admin', adminRouter)
+app.use('/admin', adminRouter)
 //app.use('/api', apiRouter)
 authRouter.use(errorMiddleware)
-//adminRouter.use(errorMiddleware)
+adminRouter.use(errorMiddleware)
 //apiRouter.use(errorMiddleware)
 
 const start = async () => {
