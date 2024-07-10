@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser')
 const authRouter = require('./authAPI/router')
 const errorMiddleware = require('./authAPI/middleware/errorMiddleware')
 const adminRouter = require('./adminAPI/router')
-//const apiRouter = require('./api/router')
+const apiRouter = require('./api/router')
 
 const port = process.env.PORT || 5000
 
@@ -18,10 +18,10 @@ app.use(cors({
 }))
 app.use('/auth', authRouter)
 app.use('/admin', adminRouter)
-//app.use('/api', apiRouter)
+app.use('/api', apiRouter)
 authRouter.use(errorMiddleware)
 adminRouter.use(errorMiddleware)
-//apiRouter.use(errorMiddleware)
+apiRouter.use(errorMiddleware)
 
 const start = async () => {
     try {

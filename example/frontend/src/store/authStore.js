@@ -84,7 +84,11 @@ export default class Store {
                 return true
             }
         } catch (e) {
-            alert('Ошибка связи с сервером')
+            if (e.response.status === 400) {
+                alert(e.response.data.message)
+            } else {
+                alert('Ошибка связи с сервером')
+            }
             return false
         }
     }
@@ -98,7 +102,11 @@ export default class Store {
                 return true
             }
         } catch (e) {
-            alert('Ошибка связи с сервером')
+            if (e.response.status === 400) {
+                alert(e.response.data.message)
+            } else {
+                alert('Ошибка связи с сервером')
+            }
             return false
         }
     }

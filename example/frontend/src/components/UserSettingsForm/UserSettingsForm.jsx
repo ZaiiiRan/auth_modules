@@ -57,6 +57,10 @@ export default function UserSettingsForm() {
 
     const saveEmail = async (e) => {
         e.preventDefault()
+        if (data.email === store.user.email) {
+            alert('Веденный Email совпадает с текущим Email пользователя')
+            return
+        }
         if (data.email !== '')
             if (!(new RegExp(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/)).test(data.email)) {
                 alert('Email некорректен')

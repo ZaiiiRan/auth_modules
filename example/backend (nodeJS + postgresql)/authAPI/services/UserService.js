@@ -8,6 +8,10 @@ const db = require('../../db')
 
 class UserService {
     async register(username, email, password) {
+        this.checkUsername(username)
+        this.checkEmail(email)
+        this.checkPassword(password)
+
         const candidate = await db.query('SELECT * FROM users WHERE username = $1 OR email = $2 LIMIT 1;', [username, email])
         if (candidate.rows[0]) {
             throw ApiError.BadRequest(candidate.rows[0].username === username ? 'Пользователь с таким логином уже существует' 
@@ -76,6 +80,8 @@ class UserService {
     }
 
     async changeUsername(id, username) {
+        this.checkUsername(username)
+
         await this.checkUsernameAvailability(username)
 
         let user = await this.getUserById(id)
@@ -89,6 +95,8 @@ class UserService {
     }
 
     async changeEmail(id, email) {
+        this.checkEmail(email)
+
         await this.checkEmailAvailability(email)
 
         let user = await this.getUserById(id)
@@ -106,6 +114,8 @@ class UserService {
     }
 
     async changePassword(id, password) {
+        this.checkPassword(password)
+        
         let user = await this.getUserById(id)
         if (!user.rows[0]) {
             throw new ApiError.BadRequest('Пользователь не найден')
@@ -156,6 +166,22 @@ class UserService {
         if (candidate.rows.length > 0) {
             throw ApiError.BadRequest('Пользователь с таким email уже существует')
         }
+    }
+
+    checkUsername(username) {
+        if (!username || username === '') throw ApiError.BadRequest('Имя пользователя пусто')
+        else if (username.length < 5) throw ApiError.BadRequest('Имя пользователя должно содержать минимум 5 символов')
+    }
+
+    checkEmail(email) {
+        if (!email || email === '') throw ApiError.BadRequest('Email пуст')
+        else if (!(new RegExp(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/)).test(email)) throw ApiError.BadRequest('Email некорректен')
+    }
+
+    checkPassword(password) {
+        if (!password || password === '') throw ApiError.BadRequest('Пароль пуст')
+        else if (!(new RegExp(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/)).test(password))
+            throw ApiError.BadRequest('Пароль должен содержать от 8 символов, хотя бы одну заглавную латинскую букву, одну строчную латинскую букву, одну цифру и один специальный символ')
     }
 }
 

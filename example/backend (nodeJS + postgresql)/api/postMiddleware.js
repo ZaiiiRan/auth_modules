@@ -1,6 +1,6 @@
 const ApiError = require('../authAPI/AuthAPIError')
 const tokenService = require('../authAPI/services/TokenService')
-const UserModel = require('../authAPI/models/UserModel')
+const db = require('../db')
 
 module.exports = async function (req, res, next) {
     try {
@@ -18,15 +18,18 @@ module.exports = async function (req, res, next) {
             return next(ApiError.UnauthorizedError())
         }
 
-        const user = await UserModel.findById(userData.id)
-        if (!user) return next(ApiError.UnauthorizedError())
+        const user = await db.query('SELECT * FROM users WHERE _id = $1;', [userData.id])
+        if (!user.rows[0]) return next(ApiError.UnauthorizedError())
 
-        if (user.isBlocked === true) next(ApiError.UnauthorizedError())
-        if (!user.isActivated) next(ApiError.UnauthorizedError())
+        if (user.rows[0].isBlocked === true) next(ApiError.UnauthorizedError())
+        if (!user.rows[0].isActivated) next(ApiError.UnauthorizedError())
 
         const { userID } = req.body
         
-        if (!user.roles.includes('ADMIN') && userID !== userData.id) 
+        const rolesRows = await db.query('SELECT value FROM roles_for_users rfu JOIN roles r ON rfu."roleID" = r._id WHERE rfu."userID" = $1;', [userData.id])
+        const roles = rolesRows.rows.map(row => row.value)
+
+        if (!roles.includes('ADMIN') && userID !== userData.id) 
             next(ApiError.UnauthorizedError())
 
         req.user = userData

@@ -9,10 +9,13 @@ export async function create(data, store, setData, setDailogShow, setIsUpdated) 
         })
         setDailogShow(false)
         setIsUpdated(prev => !prev)
-    } catch {
-        alert('Ошибка связи с сервером')
+    } catch (e) {
+        if (e.response.status === 400) {
+            alert(e.response.data.message)
+        } else {
+            alert('Ошибка связи с сервером')
+        }
     }
-    
 }
 
 export async function edit(postID, data, store, setData, setDailogShow, setIsUpdated) {
@@ -24,7 +27,11 @@ export async function edit(postID, data, store, setData, setDailogShow, setIsUpd
         })
         setDailogShow(false)
         setIsUpdated(prev => !prev)
-    } catch {
-        alert('Ошибка связи с сервером')
+    } catch (e) {
+        if (e.response.status === 400) {
+            alert(e.response.data.message)
+        } else {
+            alert('Ошибка связи с сервером')
+        }
     }
 }

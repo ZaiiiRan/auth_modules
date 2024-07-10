@@ -1,12 +1,12 @@
-const PostModel = require('./models/postModel')
-const UserModel = require('../authAPI/models/UserModel')
 const ApiError = require('../authAPI/AuthAPIError')
+const db = require('../db')
 
 class Controller {
     async getPosts(req, res, next) {
         try {
             const { offset, limit, username, title } = req.body
-            let posts = await PostModel.find().sort({ date: -1 })
+            let posts = await db.query('SELECT p._id, "user", title, body, "date", "lastEditDate", u.username AS author FROM posts p JOIN users u ON p.user = u._id ORDER BY "date" DESC;')
+            posts = posts.rows
             
             if (username && username.trim() !== '') {
                 posts = posts.filter(post => 
@@ -33,10 +33,14 @@ class Controller {
     async createPost(req, res, next) {
         try {
             const { title, body, userID } = req.body
-            const user = await UserModel.findById(userID)
-            if (!user) throw ApiError.BadRequest('Пользователь не найден')
-            const post = await PostModel.create({ user: userID, author: user.username, title: title, body: body })
-            return res.json(post)
+
+            checkTitle(title)
+            checkBody(body)
+
+            const user = await db.query('SELECT * FROM users WHERE _id = $1;', [userID])
+            if (!user.rows[0]) throw ApiError.BadRequest('Пользователь не найден')
+            const post = await db.query('INSERT INTO posts ("user", title, body) VALUES ($1, $2, $3) RETURNING *;', [userID, title, body])
+            return res.json({...post.rows[0], author: user.rows[0].username})
         } catch (e) {
             next(e)
         }
@@ -45,13 +49,17 @@ class Controller {
     async editPost(req, res, next) {
         try {
             const { title, body, postID } = req.body
-            const post = await PostModel.findById(postID)
-            if (!post) throw ApiError.BadRequest('Пост не найден')
-            post.title = title
-            post.body = body
-            post.lastEditDate = Date.now()
-            await post.save()
-            return res.json(post)
+
+            checkTitle(title)
+            checkBody(body)
+
+            let post = await db.query('SELECT * FROM posts WHERE _id = $1;', [postID])
+            if (!post.rows[0]) throw ApiError.BadRequest('Пост не найден')
+            post = await db.query('UPDATE posts SET title = $1, body = $2, "lastEditDate" = CURRENT_TIMESTAMP WHERE _id = $3 RETURNING *;', [title, body, postID])
+
+            const user = await db.query('SELECT username FROM users WHERE _id = $1;', [post.rows[0].user])
+
+            return res.json({...post.rows[0], author: user.rows[0].username})
         } catch (e) {
             next(e)
         }
@@ -60,9 +68,9 @@ class Controller {
     async deletePost(req, res, next) {
         try {
             const { postID } = req.body
-            const post = await PostModel.findById(postID)
-            if (!post) throw ApiError.BadRequest('Пост не найден')
-            await PostModel.deleteOne({ _id: postID })
+            const post = await db.query('SELECT * FROM posts WHERE _id = $1;', [postID])
+            if (!post.rows[0]) throw ApiError.BadRequest('Пост не найден')
+            await db.query('DELETE FROM posts WHERE _id = $1;', [postID])
             return res.json('Удаление успешно завершено')
         } catch (e) {
             next(e)
@@ -71,3 +79,14 @@ class Controller {
 }
 
 module.exports = new Controller()
+
+
+function checkTitle(title) {
+    if (!title || title === '') throw ApiError.BadRequest('Заголовок пуст')
+    else if (title.length < 5) throw ApiError.BadRequest('Заголовок должен быть сожержать минимум 5 символов')
+}
+
+function checkBody(body) {
+    if (!body || body === '') throw ApiError.BadRequest('Тело поста пусто')
+    else if (body.length < 20) throw ApiError.BadRequest('Тело поста должно содержать минимум 20 символов')
+}
