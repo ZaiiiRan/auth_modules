@@ -32,15 +32,14 @@ class Controller {
 
     async createPost(req, res, next) {
         try {
-            const { title, body, userID } = req.body
+            const { title, body } = req.body
 
             checkTitle(title)
             checkBody(body)
 
-            const user = await db.query('SELECT * FROM users WHERE _id = $1;', [userID])
-            if (!user.rows[0]) throw ApiError.BadRequest('Пользователь не найден')
-            const post = await db.query('INSERT INTO posts ("user", title, body) VALUES ($1, $2, $3) RETURNING *;', [userID, title, body])
-            return res.json({...post.rows[0], author: user.rows[0].username})
+            const user = req.user
+            const post = await db.query('INSERT INTO posts ("user", title, body) VALUES ($1, $2, $3) RETURNING *;', [user.id, title, body])
+            return res.json({...post.rows[0], author: user.username})
         } catch (e) {
             next(e)
         }
@@ -57,9 +56,9 @@ class Controller {
             if (!post.rows[0]) throw ApiError.BadRequest('Пост не найден')
             post = await db.query('UPDATE posts SET title = $1, body = $2, "lastEditDate" = CURRENT_TIMESTAMP WHERE _id = $3 RETURNING *;', [title, body, postID])
 
-            const user = await db.query('SELECT username FROM users WHERE _id = $1;', [post.rows[0].user])
+            const user = req.user
 
-            return res.json({...post.rows[0], author: user.rows[0].username})
+            return res.json({...post.rows[0], author: user.username})
         } catch (e) {
             next(e)
         }
@@ -83,10 +82,12 @@ module.exports = new Controller()
 
 function checkTitle(title) {
     if (!title || title === '') throw ApiError.BadRequest('Заголовок пуст')
-    else if (title.length < 5) throw ApiError.BadRequest('Заголовок должен быть сожержать минимум 5 символов')
+    else if (title.length < 5) throw ApiError.BadRequest('Заголовок должен сожержать минимум 5 символов')
+    else if (title.length > 30) throw ApiError.BadRequest('Заголовок должен содержать не более 30 символов')
 }
 
 function checkBody(body) {
     if (!body || body === '') throw ApiError.BadRequest('Тело поста пусто')
     else if (body.length < 20) throw ApiError.BadRequest('Тело поста должно содержать минимум 20 символов')
+    else if (body.length > 2000) throw ApiError.BadRequest('Тело поста должно содержать не более 2000 символов')
 }

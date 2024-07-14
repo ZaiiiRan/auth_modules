@@ -15,9 +15,13 @@ function PostCard({postData, setIsUpdated}) {
     const deletePost = async () => {
         try {
             await PostService.deletePost(postData._id, postData.user)
-            setIsUpdated(true)
-        } catch {
-            alert('Ошибка связи с сервером')
+            setIsUpdated(prev => !prev)
+        } catch (e) {
+            if (e.response.status === 400) {
+                alert(e.response.data.message)
+            } else {
+                alert('Ошибка связи с сервером')
+            }
         }
         
     }

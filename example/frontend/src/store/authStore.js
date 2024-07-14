@@ -78,7 +78,7 @@ export default class Store {
     async changeUsername(username) {
         try {
             if (this.isAuth) {
-                const response = await AuthService.changeUsername(this.user.id, username)
+                const response = await AuthService.changeUsername(username)
                 localStorage.setItem('token', response.data.accessToken)
                 this.setUser(response.data.user)
                 return true
@@ -96,7 +96,7 @@ export default class Store {
     async changeEmail(email) {
         try {
             if (this.isAuth) {
-                const response = await AuthService.changeEmail(this.user.id, email)
+                const response = await AuthService.changeEmail(email)
                 localStorage.setItem('token', response.data.accessToken)
                 this.setUser(response.data.user)
                 return true
@@ -114,7 +114,7 @@ export default class Store {
     async changePassword(password) {
         try {
             if (this.isAuth) {
-                const response = await AuthService.changePassword(this.user.id, password)
+                const response = await AuthService.changePassword(password)
                 localStorage.setItem('token', response.data.accessToken)
                 this.setUser(response.data.user)
                 return true

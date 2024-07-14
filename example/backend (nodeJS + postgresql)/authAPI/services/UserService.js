@@ -84,14 +84,9 @@ class UserService {
 
         await this.checkUsernameAvailability(username)
 
-        let user = await this.getUserById(id)
-        if (!user) {
-            throw new ApiError.BadRequest('Пользователь не найден')
-        } else {
-            user = await db.query('UPDATE users SET username = $1 WHERE _id = $2 RETURNING *;', [username, id])
+        const user = await db.query('UPDATE users SET username = $1 WHERE _id = $2 RETURNING *;', [username, id])
             
-            return this.createResponse(user.rows[0])
-        }
+        return this.createResponse(user.rows[0])
     }
 
     async changeEmail(id, email) {
@@ -99,33 +94,23 @@ class UserService {
 
         await this.checkEmailAvailability(email)
 
-        let user = await this.getUserById(id)
-        if (!user.rows[0]) {
-            throw new ApiError.BadRequest('Пользователь не найден')
-        } else {
-            const activationLink = uuid.v4()
+        const activationLink = uuid.v4()
             
-            user = await db.query('UPDATE users SET email = $1, "activationLink" = $2, "isActivated" = false WHERE _id = $3 RETURNING *;', [email, activationLink, id])
+        const user = await db.query('UPDATE users SET email = $1, "activationLink" = $2, "isActivated" = false WHERE _id = $3 RETURNING *;', [email, activationLink, id])
 
-            mailService.sendMail(email, `${process.env.HOST}/auth/activate/${activationLink}`)
+        await mailService.sendMail(email, `${process.env.HOST}/auth/activate/${activationLink}`)
 
-            return this.createResponse(user.rows[0])
-        }
+        return this.createResponse(user.rows[0])
     }
 
     async changePassword(id, password) {
         this.checkPassword(password)
         
-        let user = await this.getUserById(id)
-        if (!user.rows[0]) {
-            throw new ApiError.BadRequest('Пользователь не найден')
-        } else {
-            const hashPassword = bcrypt.hashSync(password, 6)
+        const hashPassword = bcrypt.hashSync(password, 6)
             
-            user = await db.query('UPDATE users SET password = $1 WHERE _id = $2 RETURNING *;', [hashPassword, id])
+        const user = await db.query('UPDATE users SET password = $1 WHERE _id = $2 RETURNING *;', [hashPassword, id])
 
-            return this.createResponse(user.rows[0])
-        }
+        return this.createResponse(user.rows[0])
     }
 
 
