@@ -5,26 +5,32 @@ class Controller {
     async getPosts(req, res, next) {
         try {
             const { offset, limit, username, title } = req.body
-            let posts = await db.query('SELECT p._id, "user", title, body, "date", "lastEditDate", u.username AS author FROM posts p JOIN users u ON p.user = u._id ORDER BY "date" DESC;')
-            posts = posts.rows
+
+            let query = `
+                SELECT p._id, "user", title, body, "date", "lastEditDate", u.username AS author, COUNT(*) OVER() AS total_count
+                FROM posts p
+                JOIN users u ON p.user = u._id
+                WHERE TRUE
+            `
+            let queryParams = []
             
             if (username && username.trim() !== '') {
-                posts = posts.filter(post => 
-                    post.author.toLocaleLowerCase().startsWith(username.trim().toLocaleLowerCase()))
+                query += ` AND LOWER(u.username) LIKE $${queryParams.length + 1}`
+                queryParams.push(`${username.trim().toLocaleLowerCase()}%`)
             }
             if (title && title.trim() !== '') {
-                posts = posts.filter(post => 
-                    post.title.toLowerCase().startsWith(title.trim().toLocaleLowerCase()))
-            }
-            const count = posts.length
-
-            const resp = []
-            for (let i = offset; i < offset + limit; i++) {
-                if (!posts[i]) break
-                resp.push(posts[i])
+                query += ` AND LOWER(p.title) LIKE $${queryParams.length + 1}`
+                queryParams.push(`${title.trim().toLowerCase()}%`)
             }
 
-            return res.json({ posts: resp, count: count })
+            query += ` ORDER BY "date" DESC LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`
+            queryParams.push(limit, offset)
+
+            const posts = await db.query(query, queryParams)
+
+            const totalCount = posts.rows.length > 0 ? posts.rows[0].total_count : 0
+
+            return res.json({ posts: posts.rows, count: totalCount })
         } catch (e) {
             next(e)
         }

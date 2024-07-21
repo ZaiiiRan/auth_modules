@@ -8,38 +8,41 @@ class Controller {
     async getUsers(req, res, next) {
         try {
             const {isBlocked, isAdmin, username, limit, offset} = req.body
-            let users = await db.query('SELECT * FROM users;')
-            users = users.rows
+
+            let query = `
+                SELECT u.*, COUNT(u.*) OVER() AS total_count
+                FROM users u
+                JOIN roles_for_users rfu ON u._id = rfu."userID"
+                WHERE TRUE
+            `
+            let queryParams = []
 
             if (isBlocked === true) {
-                users = users.filter(user => user.isBlocked === true)
+                query += ` AND u."isBlocked" = TRUE`
             }
             if (isAdmin === true) {
-                const rolePromises = users.map(user => 
-                    db.query('SELECT value FROM roles_for_users rfu JOIN roles r ON rfu."roleID" = r._id WHERE rfu."userID" = $1;', [user._id])
-                        .then(rolesRows => rolesRows.rows.map(row => row.value))
-                        .then(roles => roles.includes('ADMIN'))
-                )
-            
-                Promise.all(rolePromises)
-                    .then(results => {
-                        users = users.filter((_, index) => results[index])
-                    })
+                const adminRole = await db.query('SELECT _id FROM roles WHERE value = \'ADMIN\';')
+                query += ` AND rfu."roleID" = ${adminRole.rows[0]._id}`
             }
             if (username && username.trim() !== '') {
-                users = users.filter(user => user.username.toLowerCase().startsWith(username.trim().toLowerCase())
-                || user.email.toLowerCase().startsWith(username.trim().toLowerCase()))
+                query += ` AND (LOWER(u.username) LIKE $${queryParams.length + 1} OR LOWER(u.email) LIKE $${queryParams.length + 1})`
+                queryParams.push(username.trim().toLowerCase() + '%')
             }
+
+            query += ` GROUP BY u._id LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`
+            queryParams.push(limit, offset)
+
+            const users = await db.query(query, queryParams)
+
+            const count = users.rows.length > 0 ? users.rows[0].total_count : 0
 
             const usersDTO = []
-            for (let i = offset; i < offset + limit; i++) {
-                if (!users[i]) break
+            for (let i = 0; i < users.rows.length; i++) {
+                const roles = await userService.getUserRoles(users.rows[i]._id)
 
-                const roles = await userService.getUserRoles(users[i]._id)
-
-                usersDTO.push(new UserDTO({...users[i], roles: roles}))
+                usersDTO.push(new UserDTO({...users.rows[i], roles: roles}))
             }
-            return res.json({ users: usersDTO, count: users.length })
+            return res.json({ users: usersDTO, count: count })
         } catch (e) {
             next(e)
         }
