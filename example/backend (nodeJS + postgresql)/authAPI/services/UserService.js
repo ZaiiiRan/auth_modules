@@ -79,36 +79,66 @@ class UserService {
         return users.rows
     }
 
-    async changeUsername(id, username) {
+    async changeUsername(id, username, password) {
         this.checkUsername(username)
 
         await this.checkUsernameAvailability(username)
 
-        const user = await db.query('UPDATE users SET username = $1 WHERE _id = $2 RETURNING *;', [username, id])
+        let user = await this.getUserById(id)
+        if (!user) {
+            throw ApiError.BadRequest('Пользователь не найден')
+        }
+
+        const isCorrectPassword = bcrypt.compareSync(password, user.password)
+        if (!isCorrectPassword) {
+            throw ApiError.BadRequest('Указан неверный пароль')
+        }
+
+        user = await db.query('UPDATE users SET username = $1 WHERE _id = $2 RETURNING *;', [username, id])
             
         return this.createResponse(user.rows[0])
     }
 
-    async changeEmail(id, email) {
+    async changeEmail(id, email, password) {
         this.checkEmail(email)
 
         await this.checkEmailAvailability(email)
 
+        let user = await this.getUserById(id)
+        if (!user) {
+            throw ApiError.BadRequest('Пользователь не найден')
+        }
+
+        const isCorrectPassword = bcrypt.compareSync(password, user.password)
+        if (!isCorrectPassword) {
+            throw ApiError.BadRequest('Указан неверный пароль')
+        }
+
         const activationLink = uuid.v4()
             
-        const user = await db.query('UPDATE users SET email = $1, "activationLink" = $2, "isActivated" = false WHERE _id = $3 RETURNING *;', [email, activationLink, id])
+        user = await db.query('UPDATE users SET email = $1, "activationLink" = $2, "isActivated" = false WHERE _id = $3 RETURNING *;', [email, activationLink, id])
 
         await mailService.sendMail(email, `${process.env.HOST}/auth/activate/${activationLink}`)
 
         return this.createResponse(user.rows[0])
     }
 
-    async changePassword(id, password) {
+    async changePassword(id, password, currentPassword) {
         this.checkPassword(password)
+
+        let user = await this.getUserById(id)
+        if (!user) {
+            throw ApiError.BadRequest('Пользователь не найден')
+        }
+
+        const isCorrectPassword = bcrypt.compareSync(currentPassword, user.password)
+        if (!isCorrectPassword) {
+            throw ApiError.BadRequest('Указан неверный пароль')
+        }
         
         const hashPassword = bcrypt.hashSync(password, 6)
             
-        const user = await db.query('UPDATE users SET password = $1 WHERE _id = $2 RETURNING *;', [hashPassword, id])
+        user = await db.query('UPDATE users SET password = $1 WHERE _id = $2 RETURNING *;', [hashPassword, id])
 
         return this.createResponse(user.rows[0])
     }

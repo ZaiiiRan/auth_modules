@@ -76,9 +76,9 @@ class UserController {
 
     async changeUsername(req, res, next) {
         try {
-            const { username } = req.body
+            const { username, password } = req.body
             const user = req.user
-            const userData = await userService.changeUsername(user.id, username)
+            const userData = await userService.changeUsername(user.id, username, password)
 
             res.cookie('refreshToken', userData.refreshToken, 
                 {
@@ -94,9 +94,9 @@ class UserController {
 
     async changeEmail(req, res, next) {
         try {
-            const { email } = req.body
+            const { email, password } = req.body
             const user = req.user
-            const userData = await userService.changeEmail(user.id, email)
+            const userData = await userService.changeEmail(user.id, email, password)
 
             res.cookie('refreshToken', userData.refreshToken, 
                 {
@@ -112,9 +112,9 @@ class UserController {
 
     async changePassword(req, res, next) {
         try {
-            const { password } = req.body
+            const { password, currentPassword } = req.body
             const user = req.user
-            const userData = await userService.changePassword(user.id, password)
+            const userData = await userService.changePassword(user.id, password, currentPassword)
 
             res.cookie('refreshToken', userData.refreshToken, 
                 {

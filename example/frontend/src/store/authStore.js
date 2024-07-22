@@ -75,10 +75,10 @@ export default class Store {
         }
     }
 
-    async changeUsername(username) {
+    async changeUsername(username, password) {
         try {
             if (this.isAuth) {
-                const response = await AuthService.changeUsername(username)
+                const response = await AuthService.changeUsername(username, password)
                 localStorage.setItem('token', response.data.accessToken)
                 this.setUser(response.data.user)
                 return true
@@ -93,10 +93,10 @@ export default class Store {
         }
     }
 
-    async changeEmail(email) {
+    async changeEmail(email, password) {
         try {
             if (this.isAuth) {
-                const response = await AuthService.changeEmail(email)
+                const response = await AuthService.changeEmail(email, password)
                 localStorage.setItem('token', response.data.accessToken)
                 this.setUser(response.data.user)
                 return true
@@ -111,16 +111,20 @@ export default class Store {
         }
     }
 
-    async changePassword(password) {
+    async changePassword(password, currentPassword) {
         try {
             if (this.isAuth) {
-                const response = await AuthService.changePassword(password)
+                const response = await AuthService.changePassword(password, currentPassword)
                 localStorage.setItem('token', response.data.accessToken)
                 this.setUser(response.data.user)
                 return true
             }
         } catch (e) {
-            alert('Ошибка связи с сервером')
+            if (e.response.status === 400) {
+                alert(e.response.data.message)
+            } else {
+                alert('Ошибка связи с сервером')
+            }
             return false
         }
     }

@@ -1,9 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef         } from 'react'
 import useAuth from '../../hooks/useAuth'
 import styles from './UserSettingsForm.module.css'
+import ConfirmPasswordDialog from '../ConfirmPasswordDialog/ConfirmPasswordDialog'
 
 export default function UserSettingsForm() {
     const store = useAuth()
+    const [password, setPassword] = useState('')
+    const [operation, setOperation] = useState(null)
+    const [confirmShow, setConfirmShow] = useState(false)
     const [data, setData] = useState({
         username: store.user.username,
         email: store.user.email,
@@ -34,6 +39,14 @@ export default function UserSettingsForm() {
         }
     }, [isPasswordsHidden.repeatPassword])
 
+    useEffect(() => {
+        if (password !== '') {
+            operation(password)
+            setOperation(null)
+            setPassword('')
+        }
+    }, [password])
+
 
     const saveUsername = async (e) => {
         e.preventDefault()
@@ -42,17 +55,22 @@ export default function UserSettingsForm() {
             return
         }
         if (data.username !== '') {
-            const success = await store.changeUsername(data.username)
-            if (success) {
-                setData({...data, username: store.user.username})
-                alert('Имя пользователя успешно изменено')
-            }
-            else return
+            setConfirmShow(true)
+            setOperation(() => saveUsernameRequest)
         }
         if (data.username === '') {
             alert('Имя пользователя пусто')
         }
         
+    }
+
+    const saveUsernameRequest = async (password) => {
+        const success = await store.changeUsername(data.username, password)
+        if (success) {
+            setData({...data, username: store.user.username})
+            alert('Имя пользователя успешно изменено')
+        }
+        else return
     }
 
     const saveEmail = async (e) => {
@@ -67,18 +85,22 @@ export default function UserSettingsForm() {
                 return
             }
         if (data.email !== '') {
-            const success = await store.changeEmail(data.email)
-            if (success) {
-                setData({...data, email: ''})
-                setData({...data, email: store.user.email})
-                alert('Email успешно изменен')
-            } 
-            else return
+            setConfirmShow(true)
+            setOperation(() => saveEmailRequest)
         }
         if (data.email === '') {
             alert('Email пуст')
         }
-        
+    }
+
+    const saveEmailRequest = async (password) => {
+        const success = await store.changeEmail(data.email, password)
+        if (success) {
+            setData({...data, email: ''})
+            setData({...data, email: store.user.email})
+            alert('Email успешно изменен')
+        } 
+        else return
     }
 
     const savePassword = async (e) => {
@@ -93,16 +115,21 @@ export default function UserSettingsForm() {
             return
         }
         if (data.password !== '') {
-            const success = await store.changePassword(data.password)
-            if (success) {
-                setData({...data, password: '', repeatPassword: ''})
-                alert('Пароль успешно изменен')
-            } 
-            else return
+            setConfirmShow(true)
+            setOperation(() => savePasswordRequest)
         }
         if (data.password === '') {
             alert('Пароль пуст')
         } 
+    }
+
+    const savePasswordRequest = async (password) => {
+        const success = await store.changePassword(data.password, password)
+        if (success) {
+            setData({...data, password: '', repeatPassword: ''})
+            alert('Пароль успешно изменен')
+        } 
+        else return
     }
 
     return (
@@ -171,6 +198,7 @@ export default function UserSettingsForm() {
                 <button className={styles.buttonSubmit} onClick={savePassword}>Сохранить</button>
             </div>
         </form>
+        <ConfirmPasswordDialog setDialogShow={setConfirmShow} dialogShow={confirmShow} setOutput={setPassword}/>
         </>
         
     )

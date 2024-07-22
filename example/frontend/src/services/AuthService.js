@@ -13,15 +13,15 @@ export default class AuthService {
         return api.post('/logout')
     }
 
-    static async changeUsername(username) {
-        return api.post('/change-username', {username})
+    static async changeUsername(username, password) {
+        return api.post('/change-username', {username, password})
     }
 
-    static async changeEmail(email) {
-        return api.post('/change-email', {email})
+    static async changeEmail(email, password) {
+        return api.post('/change-email', {email, password})
     }
 
-    static async changePassword(password) {
-        return api.post('/change-password', {password})
+    static async changePassword(password, currentPassword) {
+        return api.post('/change-password', {password, currentPassword})
     }
 }
