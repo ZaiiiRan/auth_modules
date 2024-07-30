@@ -12,7 +12,7 @@ class UserController {
                     httpOnly: true
                 }
             )
-            return res.json(userData)
+            return res.json({ user: userData.user, accessToken: userData.accessToken})
         } catch (e) {
             next(e)
         }
@@ -29,7 +29,7 @@ class UserController {
                     httpOnly: true
                 }
             )
-            return res.json(userData)
+            return res.json({ user: userData.user, accessToken: userData.accessToken})
         } catch (e) {
             next(e)
         }
@@ -57,7 +57,7 @@ class UserController {
                     httpOnly: true
                 }
             )
-            return res.json(userData)
+            return res.json({ user: userData.user, accessToken: userData.accessToken})
         } catch (e) {
             next(e)
         }
@@ -86,7 +86,7 @@ class UserController {
                     httpOnly: true
                 }
             )
-            return res.json(userData)
+            return res.json({ user: userData.user, accessToken: userData.accessToken})
         } catch (e) {
             next(e)
         }
@@ -104,7 +104,7 @@ class UserController {
                     httpOnly: true
                 }
             )
-            return res.json(userData)
+            return res.json({ user: userData.user, accessToken: userData.accessToken})
         } catch (e) {
             next(e)
         }
@@ -122,7 +122,7 @@ class UserController {
                     httpOnly: true
                 }
             )
-            return res.json(userData)
+            return res.json({ user: userData.user, accessToken: userData.accessToken})
         } catch (e) {
             next(e)
         }
