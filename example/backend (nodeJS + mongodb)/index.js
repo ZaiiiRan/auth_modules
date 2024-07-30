@@ -18,8 +18,8 @@ app.use(cors({
     origin: `${process.env.CLIENT_URL}`
 }))
 app.use('/auth', authRouter)
-app.use('/admin', adminRouter)
-app.use('/api', apiRouter)
+//app.use('/admin', adminRouter)
+//app.use('/api', apiRouter)
 authRouter.use(errorMiddleware)
 adminRouter.use(errorMiddleware)
 apiRouter.use(errorMiddleware)

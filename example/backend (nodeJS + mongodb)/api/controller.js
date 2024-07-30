@@ -1,5 +1,5 @@
 const PostModel = require('./models/postModel')
-const UserModel = require('../authAPI/mongoDB_models/UserModel')
+const UserModel = require('../authAPI/models/UserModel')
 const ApiError = require('../authAPI/AuthAPIError')
 
 class Controller {

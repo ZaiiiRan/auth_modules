@@ -7,7 +7,7 @@ const UserSchema = new Schema({
     isActivated: {type: Boolean, default: false},
     activationLink: {type: String},
     roles: [{type: String, ref: "Role"}],
-    isBlocked: {type: Boolean}
+    isBlocked: {type: Boolean, default: false}
 })
 
 module.exports = model('User', UserSchema)

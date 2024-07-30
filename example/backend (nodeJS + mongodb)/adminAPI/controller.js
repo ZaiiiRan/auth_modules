@@ -1,5 +1,5 @@
-const userModel = require('../authAPI/mongoDB_models/UserModel')
-const tokenModel = require('../authAPI/mongoDB_models/TokenModel')
+const userModel = require('../authAPI/models/UserModel')
+const tokenModel = require('../authAPI/models/TokenModel')
 const ApiError = require('../authAPI/AuthAPIError')
 const UserDTO = require('../authAPI/data_transfer_objects/UserDTO')
 const tokenService = require('../authAPI/services/TokenService')

@@ -1,6 +1,6 @@
 const ApiError = require('../authAPI/AuthAPIError')
 const tokenService = require('../authAPI/services/TokenService')
-const userModel = require('../authAPI/mongoDB_models/UserModel')
+const userModel = require('../authAPI/models/UserModel')
 
 module.exports = async function (req, res, next) {
     try {
