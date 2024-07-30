@@ -6,25 +6,62 @@ class Controller {
     async getPosts(req, res, next) {
         try {
             const { offset, limit, username, title } = req.body
-            let posts = await PostModel.find().sort({ date: -1 })
-            
+
+            const pipeline = [
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'user',
+                        foreignField: '_id',
+                        as: 'author'
+                    }
+                },
+                {
+                    $unwind: '$author'
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        title: 1,
+                        body: 1,
+                        date: 1,
+                        lastEditDate: 1,
+                        author: '$author.username'
+                    }
+                }
+            ]
+
             if (username && username.trim() !== '') {
-                posts = posts.filter(post => 
-                    post.author.toLocaleLowerCase().startsWith(username.trim().toLocaleLowerCase()))
+                pipeline.push({
+                    $match: {
+                        'author': { $regex: `^${username.trim()}`, $options: 'i'}
+                    }
+                })
             }
+
             if (title && title.trim() !== '') {
-                posts = posts.filter(post => 
-                    post.title.toLowerCase().startsWith(title.trim().toLocaleLowerCase()))
-            }
-            const count = posts.length
-
-            const resp = []
-            for (let i = offset; i < offset + limit; i++) {
-                if (!posts[i]) break
-                resp.push(posts[i])
+                pipeline.push({
+                    $match: {
+                        'title': { $regex: `^${title.trim()}`, $options: 'i' }
+                    }
+                })
             }
 
-            return res.json({ posts: resp, count: count })
+            pipeline.push({ $sort: { date: -1 } })
+
+            const totalPosts = await PostModel.aggregate([
+                ...pipeline,
+                { $count: "count" }
+            ])
+
+            const count = totalPosts.length > 0 ? totalPosts[0].count: 0
+
+            pipeline.push({ $skip: offset })
+            pipeline.push({ $limit: limit })
+
+            const posts = await PostModel.aggregate(pipeline)
+
+            return res.json({ posts, count})
         } catch (e) {
             next(e)
         }
@@ -32,11 +69,14 @@ class Controller {
 
     async createPost(req, res, next) {
         try {
-            const { title, body, userID } = req.body
-            const user = await UserModel.findById(userID)
-            if (!user) throw ApiError.BadRequest('Пользователь не найден')
-            const post = await PostModel.create({ user: userID, author: user.username, title: title, body: body })
-            return res.json(post)
+            const { title, body } = req.body
+
+            checkTitle(title)
+            checkBody(body)
+
+            const user = req.user
+            const post = await PostModel.create({ user: user.id, title: title, body: body })
+            return res.json({ ...post, author: user.username })
         } catch (e) {
             next(e)
         }
@@ -45,13 +85,21 @@ class Controller {
     async editPost(req, res, next) {
         try {
             const { title, body, postID } = req.body
+
+            checkTitle(title)
+            checkBody(body)
+
             const post = await PostModel.findById(postID)
             if (!post) throw ApiError.BadRequest('Пост не найден')
+
             post.title = title
             post.body = body
             post.lastEditDate = Date.now()
             await post.save()
-            return res.json(post)
+
+            const user = req.user
+
+            return res.json({ ...post, author: user.username })
         } catch (e) {
             next(e)
         }
@@ -71,3 +119,15 @@ class Controller {
 }
 
 module.exports = new Controller()
+
+function checkTitle(title) {
+    if (!title || title === '') throw ApiError.BadRequest('Заголовок пуст')
+    else if (title.length < 5) throw ApiError.BadRequest('Заголовок должен сожержать минимум 5 символов')
+    else if (title.length > 30) throw ApiError.BadRequest('Заголовок должен содержать не более 30 символов')
+}
+
+function checkBody(body) {
+    if (!body || body === '') throw ApiError.BadRequest('Тело поста пусто')
+    else if (body.length < 20) throw ApiError.BadRequest('Тело поста должно содержать минимум 20 символов')
+    else if (body.length > 2000) throw ApiError.BadRequest('Тело поста должно содержать не более 2000 символов')
+}
