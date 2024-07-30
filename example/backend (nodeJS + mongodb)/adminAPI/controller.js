@@ -3,30 +3,52 @@ const tokenModel = require('../authAPI/models/TokenModel')
 const ApiError = require('../authAPI/AuthAPIError')
 const UserDTO = require('../authAPI/data_transfer_objects/UserDTO')
 const tokenService = require('../authAPI/services/TokenService')
+const RoleModel = require('../authAPI/models/RoleModel')
+const UserModel = require('../authAPI/models/UserModel')
 
 class Controller {
     async getUsers(req, res, next) {
         try {
             const {isBlocked, isAdmin, username, limit, offset} = req.body
-            let users = await userModel.find()
+
+            const pipeline = []
 
             if (isBlocked === true) {
-                users = users.filter(user => user.isBlocked === true)
-            }
-            if (isAdmin === true) {
-                users = users.filter(user => user.roles.includes('ADMIN'))
-            }
-            if (username && username.trim() !== '') {
-                users = users.filter(user => user.username.toLowerCase().startsWith(username.trim().toLowerCase())
-                || user.email.toLowerCase().startsWith(username.trim().toLowerCase()))
+                pipeline.push({
+                    $match: { isBlocked: true }
+                })
             }
 
-            const usersDTO = []
-            for (let i = offset; i < offset + limit; i++) {
-                if (!users[i]) break
-                usersDTO.push(new UserDTO(users[i]))
+            if (isAdmin === true) {
+                const adminRole = await RoleModel.findOne({ value: 'ADMIN' })
+                pipeline.push({
+                    $match: { roles: adminRole.value }
+                })
             }
-            return res.json({ users: usersDTO, count: users.length })
+
+            if (username && username.trim() !== '') {
+                const regex = new RegExp(`^${username.trim()}`, 'i')
+                pipeline.push({
+                    $match: {
+                        $or: [
+                            { username: regex },
+                            { email: regex }
+                        ]
+                    }
+                })
+            }
+
+            const countPipeline = await UserModel.aggregate([...pipeline, { $count: 'count' }])
+            const count = countPipeline.length > 0 ? countPipeline[0].count : 0
+
+            pipeline.push({ $skip: offset })
+            pipeline.push({ $limit: limit })
+            
+            let users = await userModel.aggregate(pipeline)
+
+            const usersDTO = users.map(user => new UserDTO(user))
+
+            return res.json({ users: usersDTO, count })
         } catch (e) {
             next(e)
         }
@@ -38,7 +60,10 @@ class Controller {
             const user = await userModel.findById(id)
             if (!user) throw ApiError.BadRequest('Пользователь не найден')
             if (role === 'ADMIN') {
-                if (!user.roles.includes('ADMIN')) user.roles.push('ADMIN')
+                if (!user.roles.includes('ADMIN')) {
+                    const admineRole = await RoleModel.findOne({ value: 'ADMIN' })
+                    user.roles.push(admineRole.value)
+                } 
             } else if (role === 'USER') {
                 if (user.roles.includes('ADMIN')) user.roles = user.roles.filter((role) => role === 'USER')
             }
@@ -60,8 +85,10 @@ class Controller {
     async blockUser(req, res, next) {
         try {
             const { id } = req.body
+
             const user = await userModel.findById(id)
             if (!user) throw ApiError.BadRequest('Пользователь не найден')
+
             user.isBlocked = true
             await user.save()
 
@@ -81,8 +108,10 @@ class Controller {
     async unblockUser(req, res, next) {
         try {
             const { id } = req.body
+
             const user = await userModel.findById(id)
             if (!user) throw ApiError.BadRequest('Пользователь не найден')
+
             user.isBlocked = false
             await user.save()
 
