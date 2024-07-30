@@ -40,6 +40,10 @@ function Posts() {
     }, [store.user.isActivated])
 
     useEffect(() => {
+        setCurrentPage(1)
+    }, [searchData])
+
+    useEffect(() => {
         const getPosts = async () => {
             try {
                 setIsLoading(true)
@@ -121,21 +125,33 @@ function Posts() {
                         <h1>Фильтры </h1>
                     </div>  
                     <div className={styles.inputForm}>
+                        
                         <svg height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M14.9536 14.9458L21 21M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
                         <input type="text" className={styles.input} placeholder="Заголовок" 
-                            onChange={(e) => { setSearchData({...searchData, title: e.target.value}); setIsUpdated(!isUpdated); }} value={searchData.title}/>
+                            onChange={(e) => { setSearchData({...searchData, title: e.target.value}); currentPage === 1 ? setIsUpdated(!isUpdated) : null;}} 
+                            value={searchData.title}
+                        />
+                    
                     </div>
                     <div className={styles.inputForm}>
+                        
                         <svg height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M14.9536 14.9458L21 21M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
                         <input type="text" className={styles.input} placeholder="Имя автора" 
-                            onChange={(e) => { setSearchData({...searchData, username: e.target.value}); setIsUpdated(!isUpdated);}} value={searchData.username}/>
+                            onChange={(e) => { setSearchData({...searchData, username: e.target.value}); currentPage === 1 ? setIsUpdated(!isUpdated) : null;}} 
+                            value={searchData.username}
+                        />
+                    
                     </div>
                     {
                         store.isAuth &&
                         <div className={styles.flexRow}>
                         <div>
+
                             <input type="checkbox" id="myPosts" className={styles.uiCheckbox} 
-                                checked={searchData.isMy} onChange={(e) => {setSearchData({...searchData, isMy: e.target.checked}); setIsUpdated(!isUpdated);}}/>
+                                checked={searchData.isMy} 
+                                onChange={(e) => {setSearchData({...searchData, isMy: e.target.checked}); currentPage === 1 ? setIsUpdated(!isUpdated) : null;}}
+                            />
+                            
                             <label htmlFor='myPosts'> Мои посты </label>
                         </div>
                     </div>

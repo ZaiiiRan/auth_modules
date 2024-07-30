@@ -57,11 +57,13 @@ function App() {
   useEffect(() => {
     if (localStorage.getItem('token')) {
       store.checkAuth()
-      setInterval(() => {
+
+      const intervalId = setInterval(() => {
         store.checkAuth()
       }, 30 * 60 * 1000)
-    }
 
+      return () => clearInterval(intervalId)
+    }
   }, [store])
 
   return (

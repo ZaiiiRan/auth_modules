@@ -13,7 +13,7 @@ function AdminUserCard({user, setIsChanged}) {
             return
         }
         await AdminService.updateToUser(user.id)
-        setIsChanged(true)
+        setIsChanged(prev => !prev)
     }
 
     const changeToAdmin = async () => {
@@ -23,7 +23,7 @@ function AdminUserCard({user, setIsChanged}) {
             return
         }
         await AdminService.updateToAdmin(user.id)
-        setIsChanged(true)
+        setIsChanged(prev => !prev)
     }
 
     const ban = async () => {
@@ -32,7 +32,7 @@ function AdminUserCard({user, setIsChanged}) {
             return
         }
         await AdminService.banUser(user.id)
-        setIsChanged(true)
+        setIsChanged(prev => !prev)
     }
 
     const unban = async () => {
@@ -41,7 +41,7 @@ function AdminUserCard({user, setIsChanged}) {
             return
         }
         await AdminService.unbanUser(user.id)
-        setIsChanged(true)
+        setIsChanged(prev => !prev)
     }
 
     return (
