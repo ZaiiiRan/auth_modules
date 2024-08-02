@@ -1,5 +1,7 @@
 import PostService from '../../services/PostService'
 
+import { triggerNotification } from '../../hoc/NotificationProvider'
+
 export async function create(data, store, setData, setDailogShow, setIsUpdated) {
     try {
         await PostService.createPost(data.title, data.body, store.user.id)
@@ -9,12 +11,10 @@ export async function create(data, store, setData, setDailogShow, setIsUpdated) 
         })
         setDailogShow(false)
         setIsUpdated(prev => !prev)
+
+        triggerNotification('Успех', 'Пост успешно создан')
     } catch (e) {
-        if (e.response.status === 400) {
-            alert(e.response.data.message)
-        } else {
-            alert('Ошибка связи с сервером')
-        }
+        triggerNotification('Ошибка', `${e.response.data ? e.response.data.message : 'Что-то пошло не так'}`)
     }
 }
 
@@ -27,11 +27,9 @@ export async function edit(postID, data, store, setData, setDailogShow, setIsUpd
         })
         setDailogShow(false)
         setIsUpdated(prev => !prev)
+
+        triggerNotification('Успех', 'Пост успешно изменен')
     } catch (e) {
-        if (e.response.status === 400) {
-            alert(e.response.data.message)
-        } else {
-            alert('Ошибка связи с сервером')
-        }
+        triggerNotification('Ошибка', `${e.response.data ? e.response.data.message : 'Что-то пошло не так'}`)
     }
 }

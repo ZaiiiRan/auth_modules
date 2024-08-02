@@ -8,10 +8,12 @@ import PostCardSkeleton from '../PostCardSkeleton/PostCardSkeleton'
 import PostDialog from '../PostDialog/PostDialog'
 import useAuth from '../../hooks/useAuth'
 import { observer } from 'mobx-react-lite'
+import { useNotification } from '../../hooks/useNotification'
 
 const MAX_PAGES_TO_DISPLAY = 4
 
 function Posts() {
+    const { setMessage } = useNotification()
     const [posts, setPosts] = useState([])
     const [createDialogShow, setCreateDialogShow] = useState(false)
     const [isUpdated, setIsUpdated] = useState(false)
@@ -59,7 +61,11 @@ function Posts() {
                 setCountOfPosts(response.data.count)
                 setTimeout(() => setIsLoading(false), 1000)
             } catch {
-                alert('Ошибка получения данных')
+                //alert('Ошибка получения данных')
+                setMessage({
+                    title: 'Ошибка',
+                    text: 'Произошла ошибка при загрузке постов'
+                })
                 setPosts([])
                 setIsLoading(false)
             }

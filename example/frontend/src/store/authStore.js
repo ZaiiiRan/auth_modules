@@ -3,6 +3,8 @@ import AuthService from '../services/AuthService'
 import axios from 'axios'
 import { API_URL } from '../api/api'
 
+import { triggerNotification } from '../hoc/NotificationProvider'
+
 export default class Store {
     user = {}
     isAuth = false
@@ -33,7 +35,9 @@ export default class Store {
             this.setUser(response.data.user)
         } catch (e) {
             //обработка ошибок при логине
-            alert(e.response?.data?.message)
+
+            //alert(e.response?.data?.message)
+            triggerNotification('Ошибка', `${e.response.data ? e.response.data.message : 'Что-то пошло не так'}`)
         }
     }
 
@@ -45,7 +49,9 @@ export default class Store {
             this.setUser(response.data.user)
         } catch (e) {
             //обработка ошибок при регистрации
-            alert(e.response?.data?.message)
+
+            //alert(e.response?.data?.message)
+            triggerNotification('Ошибка', `${e.response.data ? e.response.data.message : 'Что-то пошло не так'}`)
         }
     }
 
@@ -57,7 +63,8 @@ export default class Store {
             this.setUser({})
         } catch (e) {
             //обработка ошибок при выходе
-            alert('Ошибка связи с сервером')
+            
+            triggerNotification('Ошибка', `${e.response.data ? e.response.data.message : 'Что-то пошло не так'}`)
         }
     }
 
@@ -84,11 +91,7 @@ export default class Store {
                 return true
             }
         } catch (e) {
-            if (e.response.status === 400) {
-                alert(e.response.data.message)
-            } else {
-                alert('Ошибка связи с сервером')
-            }
+            triggerNotification('Ошибка', `${e.response.data ? e.response.data.message : 'Что-то пошло не так'}`)
             return false
         }
     }
@@ -102,11 +105,7 @@ export default class Store {
                 return true
             }
         } catch (e) {
-            if (e.response.status === 400) {
-                alert(e.response.data.message)
-            } else {
-                alert('Ошибка связи с сервером')
-            }
+            triggerNotification('Ошибка', `${e.response.data ? e.response.data.message : 'Что-то пошло не так'}`)
             return false
         }
     }
@@ -120,11 +119,7 @@ export default class Store {
                 return true
             }
         } catch (e) {
-            if (e.response.status === 400) {
-                alert(e.response.data.message)
-            } else {
-                alert('Ошибка связи с сервером')
-            }
+            triggerNotification('Ошибка', `${e.response.data ? e.response.data.message : 'Что-то пошло не так'}`)
             return false
         }
     }

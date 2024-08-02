@@ -14,6 +14,8 @@ import Page404 from './pages/Page404'
 import RequireAuth from './hoc/RequireAuth'
 import UserSettings from './pages/UserSettings'
 import PostsPage from './pages/PostsPage'
+import { NotificationProvider } from './hoc/NotificationProvider'
+import Notification from './components/Notification/Notification'
 
 const router = createBrowserRouter(createRoutesFromElements(
   <Route path='/' element={<Layout />}>
@@ -67,9 +69,12 @@ function App() {
   }, [store])
 
   return (
-    <AuthProvider>
-      <RouterProvider router={router}/>
-    </AuthProvider>
+    <NotificationProvider>
+      <AuthProvider>
+        <RouterProvider router={router}/>
+      </AuthProvider>
+      <Notification/>
+    </NotificationProvider>
   )
 }
 

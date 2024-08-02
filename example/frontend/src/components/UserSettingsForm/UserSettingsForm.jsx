@@ -3,8 +3,10 @@ import { useState, useEffect, useRef         } from 'react'
 import useAuth from '../../hooks/useAuth'
 import styles from './UserSettingsForm.module.css'
 import ConfirmPasswordDialog from '../ConfirmPasswordDialog/ConfirmPasswordDialog'
+import { useNotification } from '../../hooks/useNotification'
 
 export default function UserSettingsForm() {
+    const { setMessage } = useNotification()
     const store = useAuth()
     const [password, setPassword] = useState('')
     const [operation, setOperation] = useState(null)
@@ -51,7 +53,11 @@ export default function UserSettingsForm() {
     const saveUsername = async (e) => {
         e.preventDefault()
         if (data.username === store.user.username) {
-            alert('Веденное имя пользователя совпадает с текущим именем пользователя')
+            //alert('Веденное имя пользователя совпадает с текущим именем пользователя')
+            setMessage({
+                title: 'Ошибка',
+                text: 'Веденное имя пользователя совпадает с текущим именем пользователя'
+            })
             return
         }
         if (data.username !== '') {
@@ -59,7 +65,11 @@ export default function UserSettingsForm() {
             setOperation(() => saveUsernameRequest)
         }
         if (data.username === '') {
-            alert('Имя пользователя пусто')
+            //alert('Имя пользователя пусто')
+            setMessage({
+                title: 'Ошибка',
+                text: 'Имя пользователя пусто'
+            })
         }
         
     }
@@ -68,7 +78,11 @@ export default function UserSettingsForm() {
         const success = await store.changeUsername(data.username, password)
         if (success) {
             setData({...data, username: store.user.username})
-            alert('Имя пользователя успешно изменено')
+            //alert('Имя пользователя успешно изменено')
+            setMessage({
+                title: 'Успех',
+                text: 'Имя пользователя успешно изменено'
+            })
         }
         else return
     }
@@ -76,12 +90,20 @@ export default function UserSettingsForm() {
     const saveEmail = async (e) => {
         e.preventDefault()
         if (data.email === store.user.email) {
-            alert('Веденный Email совпадает с текущим Email пользователя')
+            //alert('Веденный Email совпадает с текущим Email пользователя')
+            setMessage({
+                title: 'Ошибка',
+                text: 'Веденный Email совпадает с текущим Email пользователя'
+            })
             return
         }
         if (data.email !== '')
             if (!(new RegExp(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/)).test(data.email)) {
-                alert('Email некорректен')
+                //alert('Email некорректен')
+                setMessage({
+                    title: 'Ошибка',
+                    text: 'Email некорректен'
+                })
                 return
             }
         if (data.email !== '') {
@@ -89,7 +111,11 @@ export default function UserSettingsForm() {
             setOperation(() => saveEmailRequest)
         }
         if (data.email === '') {
-            alert('Email пуст')
+            //alert('Email пуст')
+            setMessage({
+                title: 'Ошибка',
+                text: 'Email пуст'
+            })
         }
     }
 
@@ -98,7 +124,11 @@ export default function UserSettingsForm() {
         if (success) {
             setData({...data, email: ''})
             setData({...data, email: store.user.email})
-            alert('Email успешно изменен')
+            //alert('Email успешно изменен')
+            setMessage({
+                title: 'Успех',
+                text: 'Email успешно изменен'
+            })
         } 
         else return
     }
@@ -107,11 +137,19 @@ export default function UserSettingsForm() {
         e.preventDefault()
         if (data.password !== '') 
             if (!(new RegExp(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/)).test(data.password)) {
-                alert('Пароль должен содержать от 8 символов, хотя бы одну заглавную латинскую букву, одну строчную латинскую букву, одну цифру и один специальный символ')
+                //alert('Пароль должен содержать от 8 символов, хотя бы одну заглавную латинскую букву, одну строчную латинскую букву, одну цифру и один специальный символ')
+                setMessage({
+                    title: 'Ошибка',
+                    text: 'Пароль должен содержать от 8 символов, хотя бы одну заглавную латинскую букву, одну строчную латинскую букву, одну цифру и один специальный символ'
+                })
                 return
             }
         if (data.password !== '' && data.repeatPassword !== data.password) {
-            alert('Пароли должны совпвдать')
+            //alert('Пароли должны совпадать')
+            setMessage({
+                title: 'Ошибка',
+                text: 'Пароли должны совпадать'
+            })
             return
         }
         if (data.password !== '') {
@@ -119,7 +157,11 @@ export default function UserSettingsForm() {
             setOperation(() => savePasswordRequest)
         }
         if (data.password === '') {
-            alert('Пароль пуст')
+            //alert('Пароль пуст')
+            setMessage({
+                title: 'Ошибка',
+                text: 'Пароль пуст'
+            })
         } 
     }
 
@@ -127,7 +169,11 @@ export default function UserSettingsForm() {
         const success = await store.changePassword(data.password, password)
         if (success) {
             setData({...data, password: '', repeatPassword: ''})
-            alert('Пароль успешно изменен')
+            //alert('Пароль успешно изменен')
+            setMessage({
+                title: 'Успех',
+                text: 'Пароль успешно изменен'
+            })
         } 
         else return
     }

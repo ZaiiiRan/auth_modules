@@ -1,0 +1,52 @@
+.NotificationWrapper {
+    width: 100vw;
+    height: 100vh;
+    z-index: 50;
+    position: fixed;
+    top:0;
+    left:0;
+    background-color: rgba(0, 0, 0, 0.507);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: visibility 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+.NotificationWrapper.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+.Notification {
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #ffffff;
+    padding: 30px;
+    width: 450px;
+    border-radius: 20px;
+}
+
+.NotificationTitle {
+    align-self: center;
+}
+
+.NotificationButton {
+    margin: 20px 0 10px 0;
+    background-color: #151717;
+    border: none;
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 10px;
+    height: 50px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.NotificationButton:hover {
+    background-color: #252727;
+}

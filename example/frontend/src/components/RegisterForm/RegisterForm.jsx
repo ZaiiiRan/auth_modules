@@ -2,8 +2,10 @@ import useAuth from "../../hooks/useAuth"
 import { Link } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import styles from './RegisterForm.module.css'
+import { useNotification } from "../../hooks/useNotification"
 
 export default function RegisterForm() {
+    const { setMessage } = useNotification()
     const store = useAuth()
     const [data, setData] = useState({
         username: '',
@@ -39,28 +41,52 @@ export default function RegisterForm() {
         e.preventDefault()
 
         if (data.username === '') {
-            alert('Имя пользователя пусто')
+            //alert('Имя пользователя пусто')
+            setMessage({
+                title: 'Ошибка',
+                text: 'Имя пользователя пусто'
+            })
             return
         }
 
         if (data.email === '') {
-            alert('Email пуст')
+            //alert('Email пуст')
+            setMessage({
+                title: 'Ошибка',
+                text: 'Email пуст'
+            })
             return
         } else if (! (new RegExp(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/)).test(data.email)) {
-            alert('Email некорректен')
+            //alert('Email некорректен')
+            setMessage({
+                title: 'Ошибка',
+                text: 'Email некорректен'
+            })
             return
         }
 
         if (data.password === '') {
-            alert('Пароль пуст')
+            //alert('Пароль пуст')
+            setMessage({
+                title: 'Ошибка',
+                text: 'Пароль пуст'
+            })
             return
         } else if (! (new RegExp(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/)).test(data.password)) {
-            alert('Пароль должен содержать от 8 символов, хотя бы одну заглавную латинскую букву, одну строчную латинскую букву, одну цифру и один специальный символ')
+            //alert('Пароль должен содержать от 8 символов, хотя бы одну заглавную латинскую букву, одну строчную латинскую букву, одну цифру и один специальный символ')
+            setMessage({
+                title: 'Ошибка',
+                text: 'Пароль должен содержать от 8 символов, хотя бы одну заглавную латинскую букву, одну строчную латинскую букву, одну цифру и один специальный символ'
+            })
             return
         }
 
         if (data.repeatPassword !== data.password) {
-            alert('Пароли должны совпвдать')
+            //alert('Пароли должны совпадать')
+            setMessage({
+                title: 'Ошибка',
+                text: 'Пароли должны совпадать'
+            })
             return
         }
 

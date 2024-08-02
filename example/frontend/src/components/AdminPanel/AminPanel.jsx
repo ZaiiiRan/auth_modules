@@ -6,10 +6,12 @@ import styles from './AdminPanel.module.css'
 import AdminUserCard from '../AdminUserCard/AdminUserCard'
 import useAuth from '../../hooks/useAuth'
 import AdminUserCardSkeleton from '../AdminUserCardSkeleton/AdminUserCardSkeleton'
+import { useNotification } from '../../hooks/useNotification'
 
 const MAX_PAGES_TO_DISPLAY = 4
 
 export default function AdminPanel() {
+    const { setMessage } = useNotification()
     const [users, setUsers] = useState([])
     const [isChanged, setIsChanged] = useState(false) 
     const [searchData, setSearchData] = useState({
@@ -66,7 +68,11 @@ export default function AdminPanel() {
                 setCountOfUsers(response.data.count)
                 setTimeout(() => setIsLoading(false), 1000)
             } catch {
-                alert('Ошибка при получении данных')
+                //alert('Ошибка при получении данных')
+                setMessage({
+                    title: 'Ошибка',
+                    text: 'Ошибка при получении данных'
+                })
                 setUsers([])
                 setIsLoading(false)
             }

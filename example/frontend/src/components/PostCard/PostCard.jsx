@@ -6,9 +6,11 @@ import PostService from '../../services/PostService'
 import { useState } from 'react'
 import { observer } from 'mobx-react-lite'
 import PostDialog from '../PostDialog/PostDialog'
+import { useNotification } from '../../hooks/useNotification'
 
 
 function PostCard({postData, setIsUpdated}) {
+    const { setMessage } = useNotification()
     const store = useAuth()
     const [isEditDialogShow, setIsEditDialogShow] = useState(false)
 
@@ -16,11 +18,24 @@ function PostCard({postData, setIsUpdated}) {
         try {
             await PostService.deletePost(postData._id, postData.user)
             setIsUpdated(prev => !prev)
+
+            setMessage({
+                title: 'Успех',
+                text: 'Пост успешно удален'
+            })
         } catch (e) {
-            if (e.response.status === 400) {
-                alert(e.response.data.message)
+            if (e.response.status !== 500) {
+                //alert(e.response.data.message)
+                setMessage({
+                    title: 'Ошибка',
+                    text: `${e.response.data.message}`
+                })
             } else {
-                alert('Ошибка связи с сервером')
+                //alert('Ошибка связи с сервером')
+                setMessage({
+                    title: 'Ошибка',
+                    text: 'Ошибка связи с сервером'
+                })
             }
         }
         
